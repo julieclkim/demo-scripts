@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Student Demo | Student Dashboard</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header" aria-label="Student dashboard header">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">WGU</div>
+        <div>
+          <span class="page-eyebrow">Agent Student Dashboard</span>
+          <h1 class="institution-name" data-institution>Western Governors University</h1>
+        </div>
+      </div>
+      <div class="header-meta" aria-label="Student status summary">
+        <span class="badge" data-badge-param="enrollment_status">Enrolled</span>
+        <span class="badge" data-badge-param="risk_flag" data-badge-type="risk" data-default="No risk flagged">No risk flagged</span>
+        <span class="badge" data-badge-param="account_hold_flag" data-badge-type="hold">No Account Hold</span>
+      </div>
+    </header>
+
+    <nav class="nav-card" aria-label="Demo pages">
+      <ul class="nav-list">
+        <li><a class="nav-link" aria-current="page" href="agent-script.html" data-preserve-query>Student Dashboard</a></li>
+        <li><a class="nav-link" href="financial-aid-script.html" data-preserve-query>Financial Aid Script</a></li>
+        <li><a class="nav-link" href="payment-script.html" data-preserve-query>Payment Script</a></li>
+      </ul>
+    </nav>
+
+    <section class="hero-grid" aria-label="Student overview">
+      <article class="card">
+        <div class="card-title-row">
+          <div>
+            <p class="card-subtitle">Student record</p>
+            <h2 class="student-name" data-param="full_name">Sample Student</h2>
+          </div>
+          <span class="badge info">ID <span data-param="key">123456</span></span>
+        </div>
+        <div class="student-summary">
+          <div class="summary-line"><strong>Program:</strong> <span data-param="program">Bachelor of Science, Business Administration</span></div>
+          <div class="summary-line"><strong>Student type:</strong> <span data-param="student_type">Active Student</span></div>
+          <div class="summary-line"><strong>Contact:</strong> <span data-param="phone_number" data-format="phone">(555) 010-1010</span> <span aria-hidden="true">|</span> <span data-param="email">student@example.edu</span></div>
+        </div>
+        <div class="metric-grid" aria-label="Key account metrics">
+          <div class="metric">
+            <span class="metric-label">Balance Due</span>
+            <span class="metric-value" data-param="balance_due">$0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Aid Status</span>
+            <span class="metric-value" data-param="financial_aid_status">Eligibility review pending</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Next Action</span>
+            <span class="metric-value" data-param="next_required_action">Review account</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card compact" aria-label="Agent guidance">
+        <h2 class="card-title">Conversation focus</h2>
+        <ul class="panel-list">
+          <li class="panel-item">
+            <span class="panel-label">Next Step</span>
+            <span class="panel-value" data-param="next_step">Confirm the student's goal and guide them to the next required action.</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Student Notes</span>
+            <span class="panel-value" data-param="student_notes">Student record loaded from Genesys Cloud participant attributes.</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Last Action Taken</span>
+            <span class="panel-value" data-param="last_action_taken">No prior action recorded</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="card-grid" aria-label="Student details">
+      <article class="card span-6">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Student profile</h2>
+            <p class="card-subtitle">Core account and enrollment fields from participant attributes.</p>
+          </div>
+        </div>
+        <dl class="detail-list">
+          <dt>Student ID</dt><dd data-param="key">123456</dd>
+          <dt>Full Name</dt><dd data-param="full_name">Sample Student</dd>
+          <dt>Program</dt><dd data-param="program">Bachelor of Science, Business Administration</dd>
+          <dt>Student Type</dt><dd data-param="student_type">Active Student</dd>
+          <dt>Phone Number</dt><dd data-param="phone_number" data-format="phone">(555) 010-1010</dd>
+          <dt>Email</dt><dd data-param="email">student@example.edu</dd>
+          <dt>Application Status</dt><dd data-param="application_status">Completed</dd>
+          <dt>Enrollment Counselor</dt><dd data-param="assigned_enrollment_counselor">Not Assigned</dd>
+        </dl>
+      </article>
+
+      <article class="card span-6">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Account status</h2>
+            <p class="card-subtitle">Financial, hold, and account readiness indicators.</p>
+          </div>
+        </div>
+        <dl class="detail-list">
+          <dt>Balance Due</dt><dd data-param="balance_due">$0</dd>
+          <dt>Financial Aid Status</dt><dd data-param="financial_aid_status">Eligibility review pending</dd>
+          <dt>Aid Disbursement Date</dt><dd data-param="aid_disbursement_date">Date pending</dd>
+          <dt>Payment Plan Available</dt><dd data-param="payment_plan_available" data-format="yesno">Yes</dd>
+          <dt>Account Hold</dt><dd data-param="account_hold_flag" data-format="yesno">No</dd>
+          <dt>Hold Reason</dt><dd data-param="hold_reason">No active holds</dd>
+          <dt>Risk Flag</dt><dd data-param="risk_flag">No risk flagged</dd>
+          <dt>Missing Requirements</dt><dd data-param="missing_requirements">None listed</dd>
+        </dl>
+      </article>
+
+      <article class="card span-7">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Advising and action notes</h2>
+            <p class="card-subtitle">Use this panel to keep the interaction focused and outcome-driven.</p>
+          </div>
+        </div>
+        <ul class="panel-list">
+          <li class="panel-item">
+            <span class="panel-label">Student Notes</span>
+            <span class="panel-value" data-param="student_notes">Student record loaded from Genesys Cloud participant attributes.</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Next Step</span>
+            <span class="panel-value" data-param="next_step">Confirm the student's goal and guide them to the next required action.</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Next Required Action</span>
+            <span class="panel-value" data-param="next_required_action">Review account and document the outcome.</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Last Action Taken</span>
+            <span class="panel-value" data-param="last_action_taken">No prior action recorded</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card span-5">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Campus location</h2>
+            <p class="card-subtitle">Defaults to WGU headquarters. Override with campus_lat, campus_lng, campus_address, and campus_location_name.</p>
+          </div>
+        </div>
+        <iframe class="map-frame" data-campus-map loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Campus map"></iframe>
+        <div class="map-caption">
+          <span><strong data-param="campus_location_name">WGU Headquarters</strong></span>
+          <span data-param="campus_address">4001 S 700 E, Salt Lake City, UT 84107</span>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Demo data is populated from URL query parameters supplied by Genesys Cloud participant attributes.</p>
+  </main>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

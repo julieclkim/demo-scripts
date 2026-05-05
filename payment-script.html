@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Student Demo | Payment Script</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header" aria-label="Payment script header">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">WGU</div>
+        <div>
+          <span class="page-eyebrow">Payment Script</span>
+          <h1 class="institution-name" data-institution>Western Governors University</h1>
+        </div>
+      </div>
+      <div class="header-meta" aria-label="Payment status summary">
+        <span class="badge" data-badge-param="enrollment_status">Enrolled</span>
+        <span class="badge" data-badge-param="payment_plan_available" data-badge-type="payment_plan" data-default="True">Payment Plan Available</span>
+        <span class="badge" data-badge-param="account_hold_flag" data-badge-type="hold">No Account Hold</span>
+      </div>
+    </header>
+
+    <nav class="nav-card" aria-label="Demo pages">
+      <ul class="nav-list">
+        <li><a class="nav-link" href="agent-script.html" data-preserve-query>Student Dashboard</a></li>
+        <li><a class="nav-link" href="financial-aid-script.html" data-preserve-query>Financial Aid Script</a></li>
+        <li><a class="nav-link" aria-current="page" href="payment-script.html" data-preserve-query>Payment Script</a></li>
+      </ul>
+    </nav>
+
+    <section class="hero-grid" aria-label="Payment overview">
+      <article class="card">
+        <p class="card-subtitle">Student</p>
+        <h2 class="student-name" data-param="full_name">Sample Student</h2>
+        <div class="student-summary">
+          <div class="summary-line"><strong>Student ID:</strong> <span data-param="key">123456</span></div>
+          <div class="summary-line"><strong>Program:</strong> <span data-param="program">Bachelor of Science, Business Administration</span></div>
+          <div class="summary-line"><strong>Contact:</strong> <span data-param="phone_number" data-format="phone">(555) 010-1010</span> <span aria-hidden="true">|</span> <span data-param="email">student@example.edu</span></div>
+        </div>
+        <div class="metric-grid" aria-label="Payment metrics">
+          <div class="metric">
+            <span class="metric-label">Outstanding Balance</span>
+            <span class="metric-value" data-param="balance_due">$0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Minimum Payment</span>
+            <span class="metric-value" data-param="minimum_payment">$0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Payment Due Date</span>
+            <span class="metric-value" data-param="payment_due_date">Date pending</span>
+          </div>
+        </div>
+        <div class="action-strip">
+          <a class="btn" href="https://my.wgu.edu/" target="_blank" rel="noopener" data-payment-portal>Open student payment portal</a>
+          <a class="btn secondary" href="financial-aid-script.html" data-preserve-query>Review financial aid</a>
+        </div>
+        <p class="small-note">Portal links open outside the iframe when browser policy allows it. Use payment_portal_url to override the default.</p>
+      </article>
+
+      <aside class="card compact" aria-label="Payment talk track">
+        <h2 class="card-title">Agent talk track</h2>
+        <div class="script-copy">
+          <div class="callout">
+            <h3>Set expectations</h3>
+            <p>"I can review your current balance, payment options, and any hold that may affect registration."</p>
+          </div>
+          <div class="callout" data-show-if-payment-plan>
+            <h3>Payment plan available</h3>
+            <p>The account is eligible for a payment plan. Review options, confirm the preferred plan, and direct the student to the portal.</p>
+          </div>
+          <div class="callout" data-show-if-no-payment-plan>
+            <h3>Payment plan unavailable</h3>
+            <p>Payment plan eligibility is not available on this record. Review financial aid and escalate to student accounts if needed.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card-grid script-section" aria-label="Payment details">
+      <article class="card span-6">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Balance and hold details</h2>
+            <p class="card-subtitle">Use these values to explain the payment need and any registration impact.</p>
+          </div>
+        </div>
+        <dl class="detail-list">
+          <dt>Outstanding Balance</dt><dd data-param="balance_due">$0</dd>
+          <dt>Payment Due Date</dt><dd data-param="payment_due_date">Date pending</dd>
+          <dt>Minimum Payment</dt><dd data-param="minimum_payment">$0</dd>
+          <dt>Payment Reference ID</dt><dd data-param="payment_reference_id">Generated at payment portal</dd>
+          <dt>Account Hold</dt><dd data-param="account_hold_flag" data-format="yesno">No</dd>
+          <dt>Hold Reason</dt><dd data-param="hold_reason">No active holds</dd>
+          <dt>Risk Flag</dt><dd data-param="risk_flag">No risk flagged</dd>
+          <dt>Last Action Taken</dt><dd data-param="last_action_taken">No prior action recorded</dd>
+        </dl>
+      </article>
+
+      <article class="card span-6">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Payment plan options</h2>
+            <p class="card-subtitle">Pass payment_plan_options to customize the available options for the student.</p>
+          </div>
+        </div>
+        <ul class="panel-list">
+          <li class="panel-item">
+            <span class="panel-label">Payment Plan Available</span>
+            <span class="panel-value" data-param="payment_plan_available" data-format="yesno">Yes</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Plan Options</span>
+            <span class="panel-value" data-param="payment_plan_options">Monthly installment plan, one-time payment, employer reimbursement documentation</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Financial Aid Status</span>
+            <span class="panel-value" data-param="financial_aid_status">Eligibility review pending</span>
+          </li>
+          <li class="panel-item">
+            <span class="panel-label">Next Required Action</span>
+            <span class="panel-value" data-param="next_required_action">Review account and document the outcome.</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card span-12">
+        <div class="card-title-row">
+          <div>
+            <h2 class="card-title">Payment call flow</h2>
+            <p class="card-subtitle">A concise path agents can follow while the embedded script is open.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table aria-label="Payment call flow">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Agent action</th>
+                <th>Source field</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Confirm identity using student ID and contact details.</td>
+                <td><span data-param="key">123456</span>, <span data-param="phone_number" data-format="phone">(555) 010-1010</span>, <span data-param="email">student@example.edu</span></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>State the outstanding balance and whether a hold is active.</td>
+                <td><span data-param="balance_due">$0</span>, <span data-param="account_hold_flag" data-format="yesno">No</span></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Review payment plan eligibility and available options.</td>
+                <td><span data-param="payment_plan_available" data-format="yesno">Yes</span>, <span data-param="payment_plan_options">Monthly installment plan, one-time payment, employer reimbursement documentation</span></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Direct the student to the payment portal and document the next action.</td>
+                <td><span data-param="next_required_action">Review account and document the outcome.</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Demo data is populated from URL query parameters supplied by Genesys Cloud participant attributes.</p>
+  </main>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
