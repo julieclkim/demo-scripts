@@ -662,3 +662,131 @@ tr:last-child td {
   font-size: 13px;
   font-weight: 700;
 }
+
+.advisor-panel {
+  position: sticky;
+  top: 10px;
+}
+
+.suggestion-list {
+  display: grid;
+  gap: 10px;
+}
+
+.suggestion-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+  font-weight: 650;
+}
+
+.suggestion-rank {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: var(--brand-white);
+  background: var(--brand-blue);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.course-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.course-status.success {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.course-status.warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.course-status.danger {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.course-status.info {
+  color: var(--info);
+  background: var(--info-bg);
+}
+
+.course-status.neutral {
+  color: var(--neutral);
+  background: var(--neutral-bg);
+}
+
+.muted-block {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.progress-wrap {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 130px;
+}
+
+.progress-meter {
+  display: block;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--neutral-bg);
+}
+
+.progress-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-blue);
+}
+
+.progress-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.timeline-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.timeline-list li {
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+  font-weight: 650;
+}
+
+@media (max-width: 980px) {
+  .advisor-panel {
+    position: static;
+  }
+}

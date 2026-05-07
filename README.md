@@ -7,8 +7,10 @@ Static GitHub Pages demo for a higher education agent-facing script embedded in 
 - `agent-script.html`: Student dashboard
 - `financial-aid-script.html`: Financial aid script
 - `payment-script.html`: Payment script
+- `courses-script.html`: Courses and advisor pacing view
 - `assets/styles.css`: Shared responsive card layout and WGU-inspired branding colors
 - `assets/app.js`: URL parameter parsing, defaults, badges, map, payment portal link, and query preservation across pages
+- `assets/courses.js`: Program-based dummy schedule generation and advisor recommendations
 - `.nojekyll`: Keeps GitHub Pages from applying Jekyll processing
 
 ## URL parameter keys
@@ -94,6 +96,7 @@ git push origin main
 https://julieclkim.github.io/demo-scripts/agent-script.html
 https://julieclkim.github.io/demo-scripts/financial-aid-script.html
 https://julieclkim.github.io/demo-scripts/payment-script.html
+https://julieclkim.github.io/demo-scripts/courses-script.html
 ```
 
 ## Genesys Cloud Screen Pop setup pattern
@@ -131,3 +134,17 @@ https://julieclkim.github.io/demo-scripts/payment-script.html?key={{key}}&full_n
 ## Notes
 
 For production or sensitive demonstrations, URL-encode parameter values before appending them to the URL. Avoid placing sensitive PII or regulated financial data into participant attributes or public query strings.
+
+### Courses and Advisor View
+
+For the lookup-based demo, pass only the student key. The page uses `data/students.json` plus program, status, hold, risk, and notes to generate a realistic internal advisor view.
+
+```text
+https://julieclkim.github.io/demo-scripts/courses-script.html?key={{key}}
+```
+
+Best Genesys pattern:
+
+```text
+https://julieclkim.github.io/demo-scripts/courses-script.html?key=<insert Genesys key variable from the variable picker>
+```
