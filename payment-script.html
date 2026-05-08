@@ -57,244 +57,132 @@
           </div>
         </div>
         <div class="action-strip">
-          <button class="btn" type="button" id="collectPaymentBtn" data-secure-flow-trigger>Collect Payment</button>
+          <button class="btn" type="button" id="collectPaymentBtn">Collect Payment</button>
           <a class="btn secondary" href="financial-aid-script.html" data-preserve-query>Review financial aid</a>
         </div>
-        <p class="small-note">Use Collect Payment during a live call. The demo portal stays hidden until the agent starts the secure payment handoff.</p>
+        <p class="small-note">Collect Payment opens a compact advisor review popup, prepares the payment-link SMS, and flags that the call should be moved into the secure payment flow.</p>
       </article>
 
       <aside class="card compact" aria-label="Payment talk track">
         <h2 class="card-title">Advisor talk track</h2>
         <div class="script-copy">
           <div class="callout">
-            <h3>Before secure flow</h3>
-            <p>"I can help take care of the balance today. For your security, I will move the payment portion into a secure payment session before any card or bank details are entered."</p>
+            <h3>Before sending payment link</h3>
+            <p>"I can send you a secure payment link now. You can complete the payment from your device, and I will wait on the line while the secure payment session is active."</p>
           </div>
           <div class="callout" data-show-if-payment-plan>
             <h3>Payment plan available</h3>
-            <p>Offer the minimum amount, a custom amount, or a term-balance payment. Confirm the student's preferred payment date and send the confirmation SMS after submission.</p>
+            <p>Offer the recommended minimum or a custom amount. Confirm the student understands the due date and any remaining balance after payment.</p>
           </div>
           <div class="callout" data-show-if-hold>
             <h3>Hold active</h3>
-            <p>Explain that payment may remove or review the hold based on student accounts policy. Document the confirmation number before ending the call.</p>
+            <p>Explain whether payment may clear the hold or trigger a review. Do not promise immediate hold removal unless policy supports it.</p>
           </div>
         </div>
       </aside>
     </section>
 
-    <section class="card-grid script-section" aria-label="Payment details before secure collection">
+    <section class="card-grid script-section" aria-label="Payment details">
       <article class="card span-6">
-        <div class="card-title-row">
-          <div>
-            <h2 class="card-title">Balance and hold details</h2>
-            <p class="card-subtitle">Use these values before entering the secure payment portion.</p>
-          </div>
-        </div>
+        <h2 class="card-title">Balance details</h2>
+        <p class="card-subtitle">Advisor-facing details to review before sending the secure payment link.</p>
         <dl class="detail-list">
           <dt>Outstanding Balance</dt><dd data-param="balance_due">$0</dd>
-          <dt>Payment Due Date</dt><dd data-param="payment_due_date">Date pending</dd>
           <dt>Recommended Minimum</dt><dd data-param="minimum_payment">$0</dd>
+          <dt>Payment Due Date</dt><dd data-param="payment_due_date">Date pending</dd>
+          <dt>Payment Plan Available</dt><dd data-param="payment_plan_available" data-format="yesno">Yes</dd>
           <dt>Account Hold</dt><dd data-param="account_hold_flag" data-format="yesno">No</dd>
           <dt>Hold Reason</dt><dd data-param="hold_reason">No active holds</dd>
-          <dt>Risk Flag</dt><dd data-param="risk_flag">No risk flagged</dd>
-          <dt>Last Action Taken</dt><dd data-param="last_action_taken">No prior action recorded</dd>
         </dl>
       </article>
 
       <article class="card span-6">
-        <div class="card-title-row">
-          <div>
-            <h2 class="card-title">Payment options</h2>
-            <p class="card-subtitle">Advisor-facing payment guidance based on the student account.</p>
-          </div>
-        </div>
+        <h2 class="card-title">Next best action</h2>
+        <p class="card-subtitle">Use this as the live-call guide while the student completes payment.</p>
         <ul class="panel-list">
-          <li class="panel-item">
-            <span class="panel-label">Payment Plan Available</span>
-            <span class="panel-value" data-param="payment_plan_available" data-format="yesno">Yes</span>
-          </li>
-          <li class="panel-item">
-            <span class="panel-label">Plan Options</span>
-            <span class="panel-value" data-param="payment_plan_options">Monthly installment plan, one-time payment, employer reimbursement documentation</span>
-          </li>
-          <li class="panel-item">
-            <span class="panel-label">Financial Aid Status</span>
-            <span class="panel-value" data-param="financial_aid_status">Eligibility review pending</span>
-          </li>
-          <li class="panel-item">
-            <span class="panel-label">Next Required Action</span>
-            <span class="panel-value" data-param="next_required_action">Review account and document the outcome.</span>
-          </li>
+          <li class="panel-item"><span class="panel-label">Financial Aid Status</span><span class="panel-value" data-param="financial_aid_status">Eligibility review pending</span></li>
+          <li class="panel-item"><span class="panel-label">Next Required Action</span><span class="panel-value" data-param="next_required_action">Review account and document the outcome.</span></li>
+          <li class="panel-item"><span class="panel-label">Last Action Taken</span><span class="panel-value" data-param="last_action_taken">No prior action recorded</span></li>
+          <li class="panel-item"><span class="panel-label">Risk Flag</span><span class="panel-value" data-param="risk_flag">No risk flagged</span></li>
         </ul>
       </article>
     </section>
 
-    <section class="payment-portal hidden" id="paymentPortal" aria-label="Secure payment collection portal" aria-live="polite">
-      <div class="portal-shell">
-        <div class="portal-main card">
-          <div class="secure-banner" id="secureBanner">
-            <span class="secure-dot" aria-hidden="true"></span>
-            <div>
-              <strong>Secure payment session requested</strong>
-              <span>Use a Genesys secure flow for real card or ACH collection. This page is a no-card-data demo.</span>
-            </div>
-          </div>
-
-          <div class="card-title-row">
-            <div>
-              <p class="card-subtitle">Admin Payment Portal</p>
-              <h2 class="card-title">Collect student payment</h2>
-            </div>
-            <span class="badge info" id="portalStepBadge">Step 1 of 3</span>
-          </div>
-
-          <ol class="stepper" aria-label="Payment steps">
-            <li class="active" data-step-marker="1">Review</li>
-            <li data-step-marker="2">Authorize</li>
-            <li data-step-marker="3">Confirm</li>
-          </ol>
-
-          <form id="paymentForm" novalidate>
-            <section class="payment-step" data-payment-step="1">
-              <h3>Review payment details</h3>
-              <div class="portal-summary-grid">
-                <div><span>Student</span><strong data-param="full_name">Sample Student</strong></div>
-                <div><span>Student ID</span><strong data-param="key">123456</strong></div>
-                <div><span>Phone for SMS</span><strong data-param="phone_number" data-format="phone" data-sms-phone>(555) 010-1010</strong></div>
-                <div><span>Current balance</span><strong data-param="balance_due">$0</strong></div>
-              </div>
-
-              <label class="field-label" for="paymentAmount">Payment amount</label>
-              <div class="amount-row">
-                <span class="currency-prefix">$</span>
-                <input id="paymentAmount" name="paymentAmount" type="number" min="1" step="0.01" inputmode="decimal" required>
-              </div>
-              <div class="quick-amounts" aria-label="Quick payment amount selections">
-                <button type="button" class="chip-btn" data-amount-choice="minimum">Recommended minimum</button>
-                <button type="button" class="chip-btn" data-amount-choice="half">Half balance</button>
-                <button type="button" class="chip-btn" data-amount-choice="full">Full balance</button>
-              </div>
-
-              <label class="field-label" for="paymentDate">Payment date</label>
-              <input id="paymentDate" name="paymentDate" type="date" required>
-
-              <label class="field-label" for="paymentMethod">Payment method</label>
-              <select id="paymentMethod" name="paymentMethod" required>
-                <option value="Card via secure flow">Card via secure flow</option>
-                <option value="ACH via secure flow">ACH via secure flow</option>
-                <option value="Saved payment profile">Saved payment profile</option>
-              </select>
-
-              <div class="form-warning" id="paymentValidation" role="alert"></div>
-            </section>
-
-            <section class="payment-step hidden" data-payment-step="2">
-              <h3>Authorize secure collection</h3>
-              <div class="auth-panel">
-                <p><strong>Agent instruction:</strong> Ask the student to complete payment details in the secure flow. Do not ask the student to say card, CVV, or bank information aloud.</p>
-                <ul>
-                  <li>Recording and monitoring should be paused or isolated by the Genesys secure flow.</li>
-                  <li>The agent can see amount, payment date, and confirmation status only.</li>
-                  <li>No card or bank account values are stored in GitHub Pages or this demo page.</li>
-                </ul>
-              </div>
-              <label class="checkbox-row">
-                <input type="checkbox" id="studentAuthorized">
-                <span>Student authorized the selected payment amount and date.</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="secureFlowCompleted">
-                <span>Secure flow completed successfully.</span>
-              </label>
-            </section>
-
-            <section class="payment-step hidden" data-payment-step="3">
-              <h3>Confirm and send SMS</h3>
-              <div class="confirmation-card">
-                <span>Confirmation number</span>
-                <strong id="confirmationNumber">Pending</strong>
-              </div>
-              <label class="field-label" for="smsPreview">SMS confirmation preview</label>
-              <textarea id="smsPreview" rows="5"></textarea>
-              <p class="small-note">In a live Genesys build, Submit Payment should trigger a Genesys Data Action or Architect step that sends this SMS to the phone number on the student record.</p>
-            </section>
-
-            <div class="portal-actions">
-              <button type="button" class="btn secondary" id="portalBackBtn">Back</button>
-              <button type="button" class="btn" id="portalNextBtn">Continue</button>
-              <button type="submit" class="btn success hidden" id="submitPaymentBtn">Submit Payment</button>
-              <button type="button" class="btn secondary" id="cancelPaymentBtn">Cancel</button>
-            </div>
-          </form>
-        </div>
-
-        <aside class="portal-side card">
-          <h2 class="card-title">Live-call checklist</h2>
-          <ul class="advisor-checklist">
-            <li>Verify student identity before starting payment.</li>
-            <li>Click Collect Payment to request secure flow handoff.</li>
-            <li>Confirm amount and payment date with the student.</li>
-            <li>Do not collect card or bank details in the agent script.</li>
-            <li>Submit payment and send confirmation SMS.</li>
-          </ul>
-          <div class="callout">
-            <h3>Genesys integration hook</h3>
-            <p>This demo sets browser-side payment variables and emits a payment event. Real SMS and secure flow control must be handled in Genesys, not by static GitHub Pages.</p>
-          </div>
-          <dl class="detail-list compact-list">
-            <dt>Secure flow flag</dt><dd id="secureFlowFlag">Not requested</dd>
-            <dt>SMS destination</dt><dd data-param="phone_number" data-format="phone">(555) 010-1010</dd>
-            <dt>Payment status</dt><dd id="paymentStatus">Not started</dd>
-          </dl>
-        </aside>
-      </div>
-    </section>
-
-    <section class="card span-12" aria-label="Post-payment call flow">
-      <div class="card-title-row">
-        <div>
-          <h2 class="card-title">Payment call flow</h2>
-          <p class="card-subtitle">Use this path while the embedded script is open.</p>
-        </div>
-      </div>
+    <section class="card span-12" aria-label="Payment link flow">
+      <h2 class="card-title">Payment link call flow</h2>
       <div class="table-wrap">
-        <table aria-label="Payment call flow">
-          <thead>
-            <tr>
-              <th>Step</th>
-              <th>Agent action</th>
-              <th>Demo automation</th>
-            </tr>
-          </thead>
+        <table aria-label="Payment link call flow">
+          <thead><tr><th>Step</th><th>Agent action</th><th>System result</th></tr></thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Confirm identity using student ID and contact details.</td>
-              <td><span data-param="key">123456</span>, <span data-param="phone_number" data-format="phone">(555) 010-1010</span></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Click Collect Payment and move the call into secure collection.</td>
-              <td>Sets secure flow requested status and opens admin payment portal.</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Confirm amount, date, and method without collecting card details verbally.</td>
-              <td>Calculates payment confirmation and remaining balance.</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Submit payment and send SMS confirmation to the student.</td>
-              <td>Generates SMS payload for a Genesys Data Action or Architect SMS step.</td>
-            </tr>
+            <tr><td>1</td><td>Verify identity and review balance.</td><td>Student data is displayed from the current record.</td></tr>
+            <tr><td>2</td><td>Click Collect Payment.</td><td>Review popup opens and the secure-flow request flag is prepared.</td></tr>
+            <tr><td>3</td><td>Enter amount and send payment link.</td><td>Genesys Data Action payload is prepared to send the real SMS and the secure-flow request is flagged for the call.</td></tr>
+            <tr><td>4</td><td>Click Check for Payment after the student completes the portal.</td><td>Demo success message appears and confirmation is generated.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <p class="footer-note">Demo data is populated from URL query parameters or data/students.json. The payment portal is for demo workflow only and must not collect real card or bank information.</p>
+    <div class="modal-backdrop hidden" id="paymentModalBackdrop" aria-hidden="true"></div>
+    <section class="payment-modal hidden" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+      <div class="payment-modal-header">
+        <div>
+          <p class="card-subtitle">Secure Payment Link</p>
+          <h2 class="card-title" id="paymentModalTitle">Review and send payment request</h2>
+        </div>
+        <button class="icon-button" type="button" id="closePaymentModal" aria-label="Close payment popup">x</button>
+      </div>
+
+      <div class="secure-banner compact-banner" id="secureFlowBanner">
+        <span class="secure-dot" aria-hidden="true"></span>
+        <div>
+          <strong>Secure flow requested</strong>
+          <span>When Send Payment Link is clicked, the page prepares the Genesys Data Action inputs and flags secure flow b5907385-d3ac-4e53-a9e8-9b99d2de6c60.</span>
+        </div>
+      </div>
+
+      <div class="portal-summary-grid compact-grid">
+        <div><span>Student</span><strong data-param="full_name">Sample Student</strong></div>
+        <div><span>Student ID</span><strong data-param="key">123456</strong></div>
+        <div><span>Send To</span><strong data-param="phone_number" data-format="phone" data-sms-phone>(555) 010-1010</strong></div>
+        <div><span>Send From</span><strong data-param="sms_from_address" data-format="phone" data-sms-from data-default="+18015551212">+18015551212</strong></div>
+        <div><span>Balance</span><strong data-param="balance_due">$0</strong></div>
+        <div><span>Minimum</span><strong data-param="minimum_payment">$0</strong></div>
+        <div><span>Due Date</span><strong data-param="payment_due_date">Date pending</strong></div>
+      </div>
+
+      <form id="paymentLinkForm" class="payment-link-form">
+        <label class="field-label" for="paymentRequestAmount">Amount to collect</label>
+        <div class="amount-row">
+          <span class="currency-prefix">$</span>
+          <input id="paymentRequestAmount" name="paymentRequestAmount" type="number" min="1" step="0.01" inputmode="decimal" required>
+        </div>
+        <div class="quick-amounts" aria-label="Quick amount selections">
+          <button type="button" class="chip-btn" data-amount-choice="minimum">Minimum</button>
+          <button type="button" class="chip-btn" data-amount-choice="half">Half balance</button>
+          <button type="button" class="chip-btn" data-amount-choice="full">Full balance</button>
+        </div>
+
+        <label class="field-label" for="paymentLinkPreview">SMS preview</label>
+        <textarea id="paymentLinkPreview" rows="5" readonly></textarea>
+
+        <div class="portal-actions split-actions">
+          <button type="submit" class="btn" id="sendPaymentLinkBtn">Send Payment Link</button>
+          <button type="button" class="btn secondary" id="checkPaymentBtn">Check for Payment</button>
+        </div>
+      </form>
+
+      <div class="payment-status-panel hidden" id="paymentStatusPanel" aria-live="polite"></div>
+
+      <details class="payload-details">
+        <summary>Genesys Data Action payload</summary>
+        <pre id="paymentPayloadPreview">Pending</pre>
+      </details>
+    </section>
+
+    <p class="footer-note">Demo data is populated from URL query parameters or data/students.json. This demo does not collect or store real card or bank information. Real SMS delivery requires the Genesys Data Action to be called from Genesys, not from public GitHub Pages.</p>
   </main>
   <script src="assets/app.js" defer></script>
-  <script src="assets/payment-portal.js" defer></script>
+  <script src="assets/payment-link.js" defer></script>
 </body>
 </html>
