@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UTHA Patient Access Context</title>
+  <style>
+    :root {
+      --accent: #bf5700;
+      --accent-dark: #8f4100;
+      --ink: #17202a;
+      --muted: #5f6b7a;
+      --line: #d9dee7;
+      --soft: #f6f7f9;
+      --panel: #ffffff;
+      --good: #207a4d;
+      --warn: #9a5b00;
+      --bad: #a63232;
+      --blue: #245b91;
+      --shadow: 0 1px 3px rgba(16, 24, 40, .08);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; min-height: 100%; }
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font: 14px/1.35 Arial, Helvetica, sans-serif;
+      overflow: auto;
+    }
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      padding: clamp(10px, 1.5vw, 18px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .topbar {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    h1 { font-size: clamp(18px, 1.6vw, 22px); line-height: 1.15; margin: 0 0 4px; }
+    .sub { color: var(--muted); font-size: 12px; }
+    .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 11px;
+      background: var(--soft);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .badge.good { color: var(--good); border-color: #b9dec9; background: #f2fbf6; }
+    .badge.warn { color: var(--warn); border-color: #ead2a3; background: #fff8ea; }
+    .layout {
+      width: 100%;
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(280px, 34%) minmax(420px, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .column { display: grid; gap: 12px; align-content: start; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+      letter-spacing: .01em;
+    }
+    .content { padding: 12px; }
+    .rows { display: grid; gap: 8px; }
+    .row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px; align-items: start; }
+    .label { color: var(--muted); font-size: 12px; }
+    .value { font-weight: 700; word-break: break-word; }
+    .value.normal { font-weight: 400; }
+    .inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .status-list { display: grid; gap: 0; }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf0f4;
+      align-items: center;
+    }
+    .status-row:last-child { border-bottom: 0; }
+    .pill {
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 11px;
+      background: #eef2f7;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill.good { background: #eef9f2; color: var(--good); }
+    .pill.warn { background: #fff4df; color: var(--warn); }
+    .pill.bad { background: #fff0f0; color: var(--bad); }
+    .opener {
+      border: 1px solid #c9d7e8;
+      background: #f5f9ff;
+      color: #20364f;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+    }
+    .opener strong { color: var(--blue); }
+    .action-grid { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 8px; }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--accent);
+      color: #fff;
+      background: var(--accent);
+      border-radius: 9px;
+      padding: 9px 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+      min-height: 36px;
+    }
+    .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+    .btn.secondary { background: #fff; color: var(--accent); }
+    .btn.secondary:hover { background: #fff8f2; }
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 20;
+      display: none;
+      background: #173f2a;
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+      font-size: 13px;
+    }
+    .toast.show { display: block; }
+    .footnote { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; }
+      .badges { justify-content: flex-start; }
+      .action-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .inline-grid, .row, .action-grid { grid-template-columns: 1fr; }
+      .app { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar" aria-label="Page header">
+      <div>
+        <h1>Patient Access Context</h1>
+        <div class="sub">Administrative view for referral scheduling escalation</div>
+      </div>
+      <div class="badges" aria-label="Status badges">
+        <span class="badge good">Verified: DOB + SMS code</span>
+        <span class="badge">Source: Epic referral workflow</span>
+        <span class="badge warn">Needs records review</span>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="column">
+        <div class="card">
+          <h2>Patient Profile</h2>
+          <div class="content rows">
+            <div class="row"><div class="label">Patient</div><div class="value" id="patientName">Eunice Kim</div></div>
+            <div class="row"><div class="label">MRN</div><div class="value normal" id="mrn">7241930</div></div>
+            <div class="row"><div class="label">Preferred language</div><div class="value normal" id="language">English</div></div>
+            <div class="row"><div class="label">Mobile</div><div class="value normal">Ending in <span id="mobileLast4">1615</span></div></div>
+            <div class="row"><div class="label">Text updates</div><div class="value normal" id="smsOptIn">Consented</div></div>
+            <div class="row"><div class="label">Address</div><div class="value normal" id="address">123 Cedar Lane, Austin, Texas</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Suggested Opener</h2>
+          <div class="content">
+            <div class="opener">
+              <strong>Say:</strong> Hi Eunice, I see you just scheduled your Musculoskeletal Institute appointment and had a question about whether your outside imaging was received. I can check that for you now.
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="column">
+        <div class="inline-grid">
+          <div class="card">
+            <h2>Appointment Details</h2>
+            <div class="content rows">
+              <div class="row"><div class="label">Status</div><div class="value">Scheduled</div></div>
+              <div class="row"><div class="label">Appointment</div><div class="value normal" id="appointmentDate">Loading...</div></div>
+              <div class="row"><div class="label">Department</div><div class="value normal" id="department">Musculoskeletal Institute</div></div>
+              <div class="row"><div class="label">Location</div><div class="value normal" id="location">Health Transformation Building</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Referral Details</h2>
+            <div class="content rows">
+              <div class="row"><div class="label">Referral status</div><div class="value normal">Ready to schedule</div></div>
+              <div class="row"><div class="label">Source</div><div class="value normal">External provider referral</div></div>
+              <div class="row"><div class="label">Linkage</div><div class="value normal">Appointment linked to referral</div></div>
+              <div class="row"><div class="label">Open item</div><div class="value normal">Outside imaging status</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inline-grid">
+          <div class="card">
+            <h2>Records Details</h2>
+            <div class="content status-list">
+              <div class="status-row"><span>Referral request</span><span class="pill good">Visible</span></div>
+              <div class="status-row"><span>Provider visit note</span><span class="pill good">Visible</span></div>
+              <div class="status-row"><span>Outside imaging report</span><span class="pill bad">Not attached</span></div>
+              <div class="status-row"><span>Recommended next step</span><span class="pill warn">Create follow-up</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Demo Quick Actions</h2>
+            <div class="content">
+              <div class="action-grid">
+                <a class="btn" id="actionsLink" href="records-cost-actions.html">Open actions</a>
+                <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
+                <button class="btn secondary" type="button" onclick="toast('Transfer options opened')">Transfer call</button>
+                <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
+              </div>
+              <div class="footnote">Demo only. Buttons simulate workflow actions that could be driven by approved integrations.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const qs = new URLSearchParams(window.location.search);
+    const get = (key, fallback) => qs.get(key) || fallback;
+
+    function thirdThursdayOfSeptember() {
+      const now = new Date();
+      let year = now.getFullYear();
+      let date = new Date(year, 8, 1, 14, 30, 0);
+      while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
+      date.setDate(date.getDate() + 14);
+      const min = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (date < min) {
+        year += 1;
+        date = new Date(year, 8, 1, 14, 30, 0);
+        while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
+        date.setDate(date.getDate() + 14);
+      }
+      return date;
+    }
+
+    function formatAppt(date) {
+      const d = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(date);
+      return d + ' at 2:30 p.m.';
+    }
+
+    const appt = get('appointment', formatAppt(thirdThursdayOfSeptember()));
+    document.getElementById('patientName').textContent = get('patient_name', 'Eunice Kim');
+    document.getElementById('mrn').textContent = get('mrn', '7241930');
+    document.getElementById('language').textContent = get('language', 'English');
+    document.getElementById('mobileLast4').textContent = get('mobile_last4', '1615');
+    document.getElementById('smsOptIn').textContent = get('sms_opt_in', 'Consented');
+    document.getElementById('address').textContent = get('address', '123 Cedar Lane, Austin, Texas');
+    document.getElementById('department').textContent = get('department', 'Musculoskeletal Institute');
+    document.getElementById('appointmentDate').textContent = appt;
+    document.getElementById('actionsLink').href = 'records-cost-actions.html' + window.location.search;
+
+    function toast(message) {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+  </script>
+</body>
+</html>
