@@ -124,7 +124,10 @@
       font-size: 13px;
     }
     .opener strong { color: var(--blue); }
-    .action-grid { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 8px; }
+    .action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .notes-list { display: grid; gap: 8px; }
+    .note-item { border: 1px solid #edf0f4; border-radius: 9px; padding: 9px 10px; background: #fff; }
+    .note-time { color: var(--muted); font-size: 11px; margin-bottom: 3px; }
     .btn {
       appearance: none;
       border: 1px solid var(--accent);
@@ -245,12 +248,21 @@
             <h2>Demo Quick Actions</h2>
             <div class="content">
               <div class="action-grid">
-                <a class="btn" id="actionsLink" href="records-cost-actions.html">Open actions</a>
+                <a class="btn" id="actionsLink" href="records-cost-actions.html">Attach patient note</a>
                 <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
                 <button class="btn secondary" type="button" onclick="toast('Transfer options opened')">Transfer call</button>
                 <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
               </div>
               <div class="footnote">Demo only. Buttons simulate workflow actions that could be driven by approved integrations.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Live Call Notes</h2>
+          <div class="content">
+            <div id="liveNotes" class="notes-list">
+              <div class="footnote">No notes attached yet. Notes added during the call will appear here.</div>
             </div>
           </div>
         </div>
@@ -303,6 +315,30 @@
       clearTimeout(window.__toastTimer);
       window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
     }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"]/g, function(ch) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]);
+      });
+    }
+
+    function renderLiveNotes() {
+      const holder = document.getElementById('liveNotes');
+      if (!holder) return;
+      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
+      if (!notes.length) {
+        holder.innerHTML = '<div class="footnote">No notes attached yet. Notes added during the call will appear here.</div>';
+        return;
+      }
+      holder.innerHTML = notes.slice().reverse().map(function(note) {
+        const time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date(note.timestamp));
+        return '<div class="note-item"><div class="note-time">Added ' + time + '</div><div>' + escapeHtml(note.text) + '</div></div>';
+      }).join('');
+    }
+
+    renderLiveNotes();
+    window.addEventListener('storage', renderLiveNotes);
+    setInterval(renderLiveNotes, 1000);
   </script>
 </body>
 </html>

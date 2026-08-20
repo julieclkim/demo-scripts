@@ -72,7 +72,8 @@
     .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
     .btn.secondary { background: #fff; color: var(--accent); }
     .btn.secondary:hover { background: #fff8f2; }
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+    .quick-actions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .action-panel { display: none; margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #fffdf9; }
     .action-panel.show { display: block; }
     textarea { width: 100%; min-height: 110px; border: 1px solid var(--line); border-radius: 9px; padding: 10px; font: 13px/1.4 Arial, Helvetica, sans-serif; resize: vertical; background: #fff; }
@@ -86,7 +87,7 @@
       .topbar { align-items: flex-start; flex-direction: column; }
     }
     @media (max-width: 560px) {
-      .row, .actions { grid-template-columns: 1fr; }
+      .row, .actions, .quick-actions-grid { grid-template-columns: 1fr; }
       .app { padding: 10px; }
     }
   </style>
@@ -128,15 +129,15 @@
 
       <section class="column">
         <div class="card">
-          <h2>Records Follow-Up</h2>
+          <h2>Attach Patient Note</h2>
           <div class="content">
-            <div class="hint">Use this when the patient asks whether outside imaging or records were received.</div>
-            <button class="btn" type="button" onclick="showPanel('recordsPanel')">Create records follow-up</button>
+            <div class="hint">Document what the patient shared about the outside imaging.</div>
+            <button class="btn" type="button" onclick="showPanel('recordsPanel')">Attach patient note</button>
             <div class="action-panel" id="recordsPanel">
-              <div class="hint">Enter the follow-up note for the records team.</div>
-              <textarea id="recordsNote" aria-label="Records follow-up note"></textarea>
+              <div class="hint">Enter the note for the records follow-up.</div>
+              <textarea id="recordsNote" aria-label="Patient note"></textarea>
               <div class="actions">
-                <button class="btn" type="button" onclick="sendFollowUp('recordsNote','Records follow-up created')">Send follow-up</button>
+                <button class="btn" type="button" onclick="attachPatientNote()">Attach follow-up</button>
                 <button class="btn secondary" type="button" onclick="clearText('recordsNote')">Clear</button>
               </div>
             </div>
@@ -163,12 +164,15 @@
         </div>
 
         <div class="card">
-          <h2>Call Controls</h2>
+          <h2>Demo Quick Actions</h2>
           <div class="content">
-            <div class="actions">
+            <div class="quick-actions-grid">
               <button class="btn secondary" type="button" onclick="toast('Warm transfer prepared')">Warm transfer</button>
               <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
+              <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
+              <button class="btn secondary" type="button" onclick="toast('Benefits queue opened')">Benefits queue</button>
             </div>
+            <div class="footnote">Demo only. Buttons simulate workflow actions that could be driven by approved integrations.</div>
           </div>
         </div>
       </section>
@@ -218,14 +222,19 @@
       document.getElementById(id).focus();
     }
 
-    function sendFollowUp(textareaId, message) {
-      const value = document.getElementById(textareaId).value.trim();
+    function attachPatientNote() {
+      const value = document.getElementById('recordsNote').value.trim();
       if (!value) {
-        toast('Add a note before sending');
-        document.getElementById(textareaId).focus();
+        toast('Add a note before attaching');
+        document.getElementById('recordsNote').focus();
         return;
       }
-      toast(message);
+      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
+      notes.push({ text: value, timestamp: new Date().toISOString() });
+      localStorage.setItem('utha_live_call_notes', JSON.stringify(notes));
+      document.getElementById('recordsNote').value = '';
+      document.getElementById('recordsPanel').classList.remove('show');
+      toast('Follow-up created');
     }
 
     function toast(message) {
