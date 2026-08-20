@@ -159,6 +159,23 @@
       font-size: 13px;
     }
     .toast.show { display: block; }
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 30; display: none; align-items: center; justify-content: center;
+      padding: 18px; background: rgba(17, 24, 39, .46);
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      width: min(560px, 100%); background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.22); overflow: hidden;
+    }
+    .modal-head { padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight: 800; }
+    .modal-body { padding: 16px; }
+    .modal-body textarea {
+      width: 100%; min-height: 130px; resize: vertical; border: 1px solid #cfd6df; border-radius: 9px;
+      padding: 10px; font: inherit; color: var(--text); outline: none;
+    }
+    .modal-body textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(204,91,0,.10); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
     .footnote { color: var(--muted); font-size: 11px; margin-top: 2px; }
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
@@ -248,7 +265,7 @@
             <h2>Demo Quick Actions</h2>
             <div class="content">
               <div class="action-grid">
-                <a class="btn" id="actionsLink" href="records-cost-actions.html">Attach patient note</a>
+                <button class="btn" type="button" onclick="openNoteModal()">Attach patient note</button>
                 <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
                 <button class="btn secondary" type="button" onclick="toast('Transfer options opened')">Transfer call</button>
                 <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
@@ -269,6 +286,20 @@
       </section>
     </section>
   </main>
+
+  <div class="modal-backdrop" id="noteModal" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+    <div class="modal">
+      <div class="modal-head" id="noteModalTitle">Attach patient note</div>
+      <div class="modal-body">
+        <div class="footnote" style="margin-bottom:8px">Document what Eunice shared about the outside imaging or records.</div>
+        <textarea id="patientNote" aria-label="Patient note" placeholder="Type note here..."></textarea>
+        <div class="modal-actions">
+          <button class="btn secondary" type="button" onclick="closeNoteModal()">Cancel</button>
+          <button class="btn" type="button" onclick="attachPatientNote()">Attach follow-up</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -306,7 +337,33 @@
     document.getElementById('address').textContent = get('address', '123 Cedar Lane, Austin, Texas');
     document.getElementById('department').textContent = get('department', 'Musculoskeletal Institute');
     document.getElementById('appointmentDate').textContent = appt;
-    document.getElementById('actionsLink').href = 'records-cost-actions.html' + window.location.search;
+
+
+    function openNoteModal() {
+      document.getElementById('noteModal').classList.add('show');
+      setTimeout(() => document.getElementById('patientNote').focus(), 0);
+    }
+
+    function closeNoteModal() {
+      document.getElementById('noteModal').classList.remove('show');
+    }
+
+    function attachPatientNote() {
+      const field = document.getElementById('patientNote');
+      const value = field.value.trim();
+      if (!value) {
+        toast('Add a note before attaching');
+        field.focus();
+        return;
+      }
+      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
+      notes.push({ text: value, timestamp: new Date().toISOString() });
+      localStorage.setItem('utha_live_call_notes', JSON.stringify(notes));
+      field.value = '';
+      closeNoteModal();
+      renderLiveNotes();
+      toast('Follow-up created');
+    }
 
     function toast(message) {
       const el = document.getElementById('toast');
@@ -335,6 +392,13 @@
         return '<div class="note-item"><div class="note-time">Added ' + time + '</div><div>' + escapeHtml(note.text) + '</div></div>';
       }).join('');
     }
+
+    document.getElementById('noteModal').addEventListener('click', function(event) {
+      if (event.target === this) closeNoteModal();
+    });
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') closeNoteModal();
+    });
 
     renderLiveNotes();
     window.addEventListener('storage', renderLiveNotes);

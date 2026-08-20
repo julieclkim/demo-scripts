@@ -96,8 +96,8 @@
   <main class="app">
     <section class="topbar">
       <div>
-        <h1>Records and Follow-Up Actions</h1>
-        <div class="sub">Demo workflow for outside imaging and cost estimate requests</div>
+        <h1>Cost Follow-Up</h1>
+        <div class="sub">Demo workflow for appointment cost and benefits estimate requests</div>
       </div>
       <a class="btn secondary" id="backLink" href="patient-context.html">Back to context</a>
     </section>
@@ -111,39 +111,13 @@
             <div class="row"><div class="label">MRN</div><div class="value normal" id="mrn">7241930</div></div>
             <div class="row"><div class="label">Department</div><div class="value normal" id="department">Musculoskeletal Institute</div></div>
             <div class="row"><div class="label">Appointment</div><div class="value normal" id="appointmentDate">Loading...</div></div>
-            <div class="row"><div class="label">Patient asks</div><div class="value normal">Imaging records and estimated cost</div></div>
+            <div class="row"><div class="label">Patient asks</div><div class="value normal">Estimated appointment cost</div></div>
           </div>
         </div>
 
-        <div class="card">
-          <h2>Epic Records Check</h2>
-          <div class="content">
-            <div class="status-row"><span>Referral request</span><span class="pill good">Received</span></div>
-            <div class="status-row"><span>Appointment</span><span class="pill good">Scheduled</span></div>
-            <div class="status-row"><span>Provider visit note</span><span class="pill good">Attached</span></div>
-            <div class="status-row"><span>Outside imaging report</span><span class="pill bad">Not found</span></div>
-            <div class="status-row"><span>Recommended action</span><span class="pill warn">Follow-up needed</span></div>
-          </div>
-        </div>
       </section>
 
       <section class="column">
-        <div class="card">
-          <h2>Attach Patient Note</h2>
-          <div class="content">
-            <div class="hint">Document what the patient shared about the outside imaging.</div>
-            <button class="btn" type="button" onclick="showPanel('recordsPanel')">Attach patient note</button>
-            <div class="action-panel" id="recordsPanel">
-              <div class="hint">Enter the note for the records follow-up.</div>
-              <textarea id="recordsNote" aria-label="Patient note"></textarea>
-              <div class="actions">
-                <button class="btn" type="button" onclick="attachPatientNote()">Attach follow-up</button>
-                <button class="btn secondary" type="button" onclick="clearText('recordsNote')">Clear</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="card">
           <h2>Cost Estimate Follow-Up</h2>
           <div class="content">
@@ -222,20 +196,6 @@
       document.getElementById(id).focus();
     }
 
-    function attachPatientNote() {
-      const value = document.getElementById('recordsNote').value.trim();
-      if (!value) {
-        toast('Add a note before attaching');
-        document.getElementById('recordsNote').focus();
-        return;
-      }
-      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
-      notes.push({ text: value, timestamp: new Date().toISOString() });
-      localStorage.setItem('utha_live_call_notes', JSON.stringify(notes));
-      document.getElementById('recordsNote').value = '';
-      document.getElementById('recordsPanel').classList.remove('show');
-      toast('Follow-up created');
-    }
 
     function toast(message) {
       const el = document.getElementById('toast');
