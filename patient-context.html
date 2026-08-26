@@ -3,366 +3,424 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UTHA Patient Access Context</title>
+  <title>UT Health Austin Referral Handoff</title>
   <style>
     :root {
       --accent: #bf5700;
       --accent-dark: #8f4100;
-      --ink: #17202a;
-      --muted: #5f6b7a;
-      --line: #d9dee7;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d8dde5;
       --soft: #f6f7f9;
       --panel: #ffffff;
-      --good: #207a4d;
-      --warn: #9a5b00;
-      --bad: #a63232;
-      --blue: #245b91;
-      --shadow: 0 1px 3px rgba(16, 24, 40, .08);
+      --good: #216e4e;
+      --warn: #8a5a00;
+      --info: #2f5f8f;
     }
+
     * { box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; min-height: 100%; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
     body {
       margin: 0;
       background: #fff;
       color: var(--ink);
-      font: 14px/1.35 Arial, Helvetica, sans-serif;
-      overflow: auto;
+      font: 13px/1.4 Arial, Helvetica, sans-serif;
     }
+
+    button, a { font: inherit; }
+
     .app {
       width: 100%;
-      min-height: 100vh;
-      padding: clamp(10px, 1.5vw, 18px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 10px;
     }
-    .topbar {
-      width: 100%;
+
+    .patient-header {
       border: 1px solid var(--line);
-      border-left: 6px solid var(--accent);
-      border-radius: 12px;
-      padding: 12px 14px;
+      border-left: 5px solid var(--accent);
       background: var(--panel);
-      box-shadow: var(--shadow);
+      padding: 12px 13px;
       display: flex;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       align-items: flex-start;
     }
-    h1 { font-size: clamp(18px, 1.6vw, 22px); line-height: 1.15; margin: 0 0 4px; }
-    .sub { color: var(--muted); font-size: 12px; }
-    .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-    .badge {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 9px;
-      font-size: 11px;
-      background: var(--soft);
+
+    .patient-name {
+      margin: 0 0 2px;
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .patient-meta {
       color: var(--muted);
+      font-size: 12px;
+    }
+
+    .verified {
+      flex: 0 0 auto;
+      border: 1px solid #b9d8c8;
+      color: var(--good);
+      background: #f2faf5;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
       white-space: nowrap;
     }
-    .badge.good { color: var(--good); border-color: #b9dec9; background: #f2fbf6; }
-    .badge.warn { color: var(--warn); border-color: #ead2a3; background: #fff8ea; }
-    .layout {
-      width: 100%;
-      flex: 1;
+
+    .stack {
       display: grid;
-      grid-template-columns: minmax(280px, 34%) minmax(420px, 1fr);
-      gap: 12px;
-      align-items: stretch;
+      gap: 9px;
+      margin-top: 9px;
     }
-    .column { display: grid; gap: 12px; align-content: start; }
+
     .card {
       border: 1px solid var(--line);
-      border-radius: 12px;
       background: var(--panel);
-      overflow: hidden;
-      box-shadow: var(--shadow);
     }
-    .card h2 {
+
+    .card-title {
       margin: 0;
-      padding: 10px 12px;
-      font-size: 13px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--line);
       background: var(--soft);
-      letter-spacing: .01em;
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
     }
-    .content { padding: 12px; }
-    .rows { display: grid; gap: 8px; }
-    .row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px; align-items: start; }
-    .label { color: var(--muted); font-size: 12px; }
-    .value { font-weight: 700; word-break: break-word; }
-    .value.normal { font-weight: 400; }
-    .inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .status-list { display: grid; gap: 0; }
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid #edf0f4;
-      align-items: center;
+
+    .card-body { padding: 10px; }
+
+    .handoff {
+      display: grid;
+      gap: 8px;
     }
-    .status-row:last-child { border-bottom: 0; }
-    .pill {
-      border-radius: 999px;
-      padding: 3px 9px;
-      font-size: 11px;
-      background: #eef2f7;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-    .pill.good { background: #eef9f2; color: var(--good); }
-    .pill.warn { background: #fff4df; color: var(--warn); }
-    .pill.bad { background: #fff0f0; color: var(--bad); }
-    .opener {
-      border: 1px solid #c9d7e8;
-      background: #f5f9ff;
-      color: #20364f;
-      border-radius: 10px;
-      padding: 12px;
+
+    .handoff-summary {
+      margin: 0;
       font-size: 13px;
     }
-    .opener strong { color: var(--blue); }
-    .action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .notes-list { display: grid; gap: 8px; }
-    .note-item { border: 1px solid #edf0f4; border-radius: 9px; padding: 9px 10px; background: #fff; }
-    .note-time { color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+
+    .reason {
+      border-left: 3px solid var(--accent);
+      padding: 7px 9px;
+      background: #fff8f3;
+    }
+
+    .reason strong { display: block; margin-bottom: 2px; }
+
+    .opener {
+      color: #344054;
+      font-size: 12px;
+      padding-top: 2px;
+    }
+
+    .opener strong { color: var(--info); }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .rows {
+      display: grid;
+      gap: 0;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 9px;
+      padding: 6px 0;
+      border-bottom: 1px solid #eceff3;
+      align-items: start;
+    }
+
+    .row:last-child { border-bottom: 0; }
+    .label { color: var(--muted); font-size: 12px; }
+    .value { color: var(--ink); }
+    .value.strong { font-weight: 700; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eef2f6;
+      color: #475467;
+    }
+
+    .status.good { background: #eef8f2; color: var(--good); }
+    .status.warn { background: #fff5df; color: var(--warn); }
+
+    .activity {
+      display: grid;
+      gap: 7px;
+    }
+
+    .activity-item {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 7px;
+      align-items: start;
+    }
+
+    .check {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #eef8f2;
+      color: var(--good);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .activity-label { font-size: 12px; }
+    .activity-label span { color: var(--muted); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
     .btn {
       appearance: none;
       border: 1px solid var(--accent);
-      color: #fff;
       background: var(--accent);
-      border-radius: 9px;
-      padding: 9px 10px;
+      color: #fff;
+      padding: 8px 9px;
+      min-height: 34px;
       text-decoration: none;
-      font-weight: 700;
-      font-size: 12px;
       text-align: center;
+      font-weight: 700;
       cursor: pointer;
-      min-height: 36px;
+      border-radius: 5px;
     }
+
     .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
     .btn.secondary { background: #fff; color: var(--accent); }
-    .btn.secondary:hover { background: #fff8f2; }
+    .btn.secondary:hover { background: #fff8f3; }
+    .btn.full { grid-column: 1 / -1; }
+
+    .footnote {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
     .toast {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
-      z-index: 20;
+      right: 12px;
+      bottom: 12px;
+      z-index: 10;
       display: none;
-      background: #173f2a;
+      max-width: 300px;
+      background: #263238;
       color: #fff;
-      padding: 10px 12px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0,0,0,.18);
-      font-size: 13px;
+      padding: 9px 11px;
+      border-radius: 5px;
+      font-size: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .16);
     }
+
     .toast.show { display: block; }
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 30; display: none; align-items: center; justify-content: center;
-      padding: 18px; background: rgba(17, 24, 39, .46);
-    }
-    .modal-backdrop.show { display: flex; }
-    .modal {
-      width: min(560px, 100%); background: #fff; border: 1px solid var(--border); border-radius: 14px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.22); overflow: hidden;
-    }
-    .modal-head { padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight: 800; }
-    .modal-body { padding: 16px; }
-    .modal-body textarea {
-      width: 100%; min-height: 130px; resize: vertical; border: 1px solid #cfd6df; border-radius: 9px;
-      padding: 10px; font: inherit; color: var(--text); outline: none;
-    }
-    .modal-body textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(204,91,0,.10); }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
-    .footnote { color: var(--muted); font-size: 11px; margin-top: 2px; }
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      .topbar { flex-direction: column; }
-      .badges { justify-content: flex-start; }
-      .action-grid { grid-template-columns: 1fr 1fr; }
-    }
+
     @media (max-width: 560px) {
-      .inline-grid, .row, .action-grid { grid-template-columns: 1fr; }
-      .app { padding: 10px; }
+      .app { padding: 8px; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .patient-header { align-items: flex-start; }
+      .row { grid-template-columns: 102px minmax(0, 1fr); }
+    }
+
+    @media (max-width: 380px) {
+      .patient-header { flex-direction: column; }
+      .actions { grid-template-columns: 1fr; }
+      .btn.full { grid-column: auto; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <section class="topbar" aria-label="Page header">
+    <header class="patient-header">
       <div>
-        <h1>Patient Access Context</h1>
-        <div class="sub">Administrative view for referral scheduling escalation</div>
+        <h1 class="patient-name">Eunice Kim</h1>
+        <div class="patient-meta">DOB 03/22/1968 &nbsp;•&nbsp; Mobile ending 1615 &nbsp;•&nbsp; English</div>
       </div>
-      <div class="badges" aria-label="Status badges">
-        <span class="badge good">Verified: DOB + SMS code</span>
-        <span class="badge">Source: Epic referral workflow</span>
-        <span class="badge warn">Needs records review</span>
-      </div>
-    </section>
+      <span class="verified">Verified</span>
+    </header>
 
-    <section class="layout">
-      <aside class="column">
-        <div class="card">
-          <h2>Patient Profile</h2>
-          <div class="content rows">
-            <div class="row"><div class="label">Patient</div><div class="value" id="patientName">Eunice Kim</div></div>
-            <div class="row"><div class="label">MRN</div><div class="value normal" id="mrn">7241930</div></div>
-            <div class="row"><div class="label">Preferred language</div><div class="value normal" id="language">English</div></div>
-            <div class="row"><div class="label">Mobile</div><div class="value normal">Ending in <span id="mobileLast4">1615</span></div></div>
-            <div class="row"><div class="label">Text updates</div><div class="value normal" id="smsOptIn">Consented</div></div>
-            <div class="row"><div class="label">Address</div><div class="value normal" id="address">123 Cedar Lane, Austin, Texas</div></div>
+    <div class="stack">
+      <section class="card">
+        <h2 class="card-title">Virtual Agent Handoff</h2>
+        <div class="card-body handoff">
+          <p class="handoff-summary">Eunice completed verification, scheduled her Musculoskeletal Institute visit for <strong id="handoffAppointment">loading...</strong>, and received confirmation by text.</p>
+          <div class="reason">
+            <strong>Reason for transfer</strong>
+            Patient wants to confirm whether her outside imaging or records were received.
           </div>
-        </div>
-
-        <div class="card">
-          <h2>Suggested Opener</h2>
-          <div class="content">
-            <div class="opener">
-              <strong>Say:</strong> Hi Eunice, I see you just scheduled your Musculoskeletal Institute appointment and had a question about whether your outside imaging was received. I can check that for you now.
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <section class="column">
-        <div class="inline-grid">
-          <div class="card">
-            <h2>Appointment Details</h2>
-            <div class="content rows">
-              <div class="row"><div class="label">Status</div><div class="value">Scheduled</div></div>
-              <div class="row"><div class="label">Appointment</div><div class="value normal" id="appointmentDate">Loading...</div></div>
-              <div class="row"><div class="label">Department</div><div class="value normal" id="department">Musculoskeletal Institute</div></div>
-              <div class="row"><div class="label">Location</div><div class="value normal" id="location">Health Transformation Building</div></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Referral Details</h2>
-            <div class="content rows">
-              <div class="row"><div class="label">Referral status</div><div class="value normal">Ready to schedule</div></div>
-              <div class="row"><div class="label">Source</div><div class="value normal">External provider referral</div></div>
-              <div class="row"><div class="label">Linkage</div><div class="value normal">Appointment linked to referral</div></div>
-              <div class="row"><div class="label">Open item</div><div class="value normal">Outside imaging status</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="inline-grid">
-          <div class="card">
-            <h2>Records Details</h2>
-            <div class="content status-list">
-              <div class="status-row"><span>Referral request</span><span class="pill good">Visible</span></div>
-              <div class="status-row"><span>Provider visit note</span><span class="pill good">Visible</span></div>
-              <div class="status-row"><span>Outside imaging report</span><span class="pill bad">Not attached</span></div>
-              <div class="status-row"><span>Recommended next step</span><span class="pill warn">Create follow-up</span></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Demo Quick Actions</h2>
-            <div class="content">
-              <div class="action-grid">
-                <button class="btn" type="button" onclick="openNoteModal()">Attach patient note</button>
-                <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
-                <button class="btn secondary" type="button" onclick="toast('Transfer options opened')">Transfer call</button>
-                <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
-              </div>
-              <div class="footnote">Demo only. Buttons simulate workflow actions that could be driven by approved integrations.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Live Call Notes</h2>
-          <div class="content">
-            <div id="liveNotes" class="notes-list">
-              <div class="footnote">No notes attached yet. Notes added during the call will appear here.</div>
-            </div>
-          </div>
+          <div class="opener"><strong>Suggested opener:</strong> Hi Eunice, I see your appointment is scheduled and you're checking whether your outside imaging was received. I can help check that for you.</div>
         </div>
       </section>
-    </section>
-  </main>
 
-  <div class="modal-backdrop" id="noteModal" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
-    <div class="modal">
-      <div class="modal-head" id="noteModalTitle">Attach patient note</div>
-      <div class="modal-body">
-        <div class="footnote" style="margin-bottom:8px">Document what Eunice shared about the outside imaging or records.</div>
-        <textarea id="patientNote" aria-label="Patient note" placeholder="Type note here..."></textarea>
-        <div class="modal-actions">
-          <button class="btn secondary" type="button" onclick="closeNoteModal()">Cancel</button>
-          <button class="btn" type="button" onclick="attachPatientNote()">Attach follow-up</button>
-        </div>
+      <div class="detail-grid">
+        <section class="card">
+          <h2 class="card-title">Appointment</h2>
+          <div class="card-body rows">
+            <div class="row"><div class="label">Status</div><div class="value"><span class="status good">Scheduled</span></div></div>
+            <div class="row"><div class="label">Date &amp; time</div><div class="value strong" id="appointmentDate">Loading...</div></div>
+            <div class="row"><div class="label">Department</div><div class="value">Musculoskeletal Institute</div></div>
+            <div class="row"><div class="label">Location</div><div class="value">Health Transformation Building</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title">Referral &amp; Records</h2>
+          <div class="card-body rows">
+            <div class="row"><div class="label">Referral status</div><div class="value">Appointment scheduled</div></div>
+            <div class="row"><div class="label">Insurance</div><div class="value">No changes reported</div></div>
+            <div class="row"><div class="label">Outside imaging</div><div class="value"><span class="status warn" id="recordsStatus">Verification needed</span></div></div>
+            <div class="row"><div class="label">Earlier opening</div><div class="value">Patient requested</div></div>
+          </div>
+        </section>
       </div>
+
+      <section class="card">
+        <h2 class="card-title">Referral Activity</h2>
+        <div class="card-body activity">
+          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Referral outreach accepted</div></div>
+          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Identity verified <span>with DOB and SMS code</span></div></div>
+          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Appointment scheduled <span id="activityAppointment"></span></div></div>
+          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Confirmation and preparation details sent by SMS</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">Actions</h2>
+        <div class="card-body">
+          <div class="actions">
+            <button class="btn" id="recordsFollowUp" type="button" onclick="createRecordsFollowUp()">Create records follow-up</button>
+            <a class="btn secondary" href="records-cost-actions.html">Cost / coverage</a>
+            <button class="btn secondary full" type="button" onclick="toast('Patient chart opened in demo')">Open patient chart</button>
+          </div>
+          <div class="footnote">Demo actions only. The production source of truth and write-back workflow would follow the organization's approved EHR integration pattern.</div>
+        </div>
+      </section>
     </div>
-  </div>
+  </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const qs = new URLSearchParams(window.location.search);
-    const get = (key, fallback) => qs.get(key) || fallback;
+    const DEMO_STATE_KEY = 'utha_referral_demo_state';
 
-    function thirdThursdayOfSeptember() {
-      const now = new Date();
-      let year = now.getFullYear();
-      let date = new Date(year, 8, 1, 14, 30, 0);
-      while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
-      date.setDate(date.getDate() + 14);
-      const min = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      if (date < min) {
-        year += 1;
-        date = new Date(year, 8, 1, 14, 30, 0);
-        while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
-        date.setDate(date.getDate() + 14);
+    function centralDateParts(now = new Date()) {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(now);
+
+      const values = {};
+      parts.forEach(part => {
+        if (part.type !== 'literal') values[part.type] = Number(part.value);
+      });
+      return values;
+    }
+
+    function selectedTuesdayDate(now = new Date()) {
+      const current = centralDateParts(now);
+      const today = new Date(Date.UTC(current.year, current.month - 1, current.day));
+
+      // Match the AVA rule: start at runtime + 60 days, find the first Monday,
+      // then Eunice selects the Tuesday in the immediately following week.
+      const day60 = new Date(today);
+      day60.setUTCDate(day60.getUTCDate() + 60);
+
+      const firstMonday = new Date(day60);
+      const daysToMonday = (8 - firstMonday.getUTCDay()) % 7;
+      firstMonday.setUTCDate(firstMonday.getUTCDate() + daysToMonday);
+
+      const selectedTuesday = new Date(firstMonday);
+      selectedTuesday.setUTCDate(selectedTuesday.getUTCDate() + 8);
+      return selectedTuesday;
+    }
+
+    function formatAppointment(date) {
+      const day = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(date);
+      return `${day} at 2:30 PM`;
+    }
+
+    function formatActivityDate(date) {
+      const day = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        month: 'short',
+        day: 'numeric'
+      }).format(date);
+      return `for ${day} at 2:30 PM`;
+    }
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(DEMO_STATE_KEY) || '{}');
+      } catch (error) {
+        return {};
       }
-      return date;
     }
 
-    function formatAppt(date) {
-      const d = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(date);
-      return d + ' at 2:30 p.m.';
+    function saveState(state) {
+      localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state));
     }
 
-    const appt = get('appointment', formatAppt(thirdThursdayOfSeptember()));
-    document.getElementById('patientName').textContent = get('patient_name', 'Eunice Kim');
-    document.getElementById('mrn').textContent = get('mrn', '7241930');
-    document.getElementById('language').textContent = get('language', 'English');
-    document.getElementById('mobileLast4').textContent = get('mobile_last4', '1615');
-    document.getElementById('smsOptIn').textContent = get('sms_opt_in', 'Consented');
-    document.getElementById('address').textContent = get('address', '123 Cedar Lane, Austin, Texas');
-    document.getElementById('department').textContent = get('department', 'Musculoskeletal Institute');
-    document.getElementById('appointmentDate').textContent = appt;
+    const appointment = selectedTuesdayDate();
+    document.getElementById('appointmentDate').textContent = formatAppointment(appointment);
+    document.getElementById('handoffAppointment').textContent = formatAppointment(appointment);
+    document.getElementById('activityAppointment').textContent = formatActivityDate(appointment);
 
+    function refreshRecordsState() {
+      const state = loadState();
+      const status = document.getElementById('recordsStatus');
+      const button = document.getElementById('recordsFollowUp');
 
-    function openNoteModal() {
-      document.getElementById('noteModal').classList.add('show');
-      setTimeout(() => document.getElementById('patientNote').focus(), 0);
-    }
-
-    function closeNoteModal() {
-      document.getElementById('noteModal').classList.remove('show');
-    }
-
-    function attachPatientNote() {
-      const field = document.getElementById('patientNote');
-      const value = field.value.trim();
-      if (!value) {
-        toast('Add a note before attaching');
-        field.focus();
-        return;
+      if (state.recordsFollowUpCreated) {
+        status.textContent = 'Follow-up created';
+        status.className = 'status good';
+        button.textContent = 'Records follow-up created';
+        button.disabled = true;
+        button.style.cursor = 'default';
+        button.style.opacity = '.78';
       }
-      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
-      notes.push({ text: value, timestamp: new Date().toISOString() });
-      localStorage.setItem('utha_live_call_notes', JSON.stringify(notes));
-      field.value = '';
-      closeNoteModal();
-      renderLiveNotes();
-      toast('Follow-up created');
+    }
+
+    function createRecordsFollowUp() {
+      const state = loadState();
+      state.recordsFollowUpCreated = true;
+      state.recordsFollowUpCreatedAt = new Date().toISOString();
+      saveState(state);
+      refreshRecordsState();
+      toast('Records follow-up created');
     }
 
     function toast(message) {
@@ -373,36 +431,7 @@
       window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
     }
 
-    function escapeHtml(value) {
-      return value.replace(/[&<>"]/g, function(ch) {
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]);
-      });
-    }
-
-    function renderLiveNotes() {
-      const holder = document.getElementById('liveNotes');
-      if (!holder) return;
-      const notes = JSON.parse(localStorage.getItem('utha_live_call_notes') || '[]');
-      if (!notes.length) {
-        holder.innerHTML = '<div class="footnote">No notes attached yet. Notes added during the call will appear here.</div>';
-        return;
-      }
-      holder.innerHTML = notes.slice().reverse().map(function(note) {
-        const time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date(note.timestamp));
-        return '<div class="note-item"><div class="note-time">Added ' + time + '</div><div>' + escapeHtml(note.text) + '</div></div>';
-      }).join('');
-    }
-
-    document.getElementById('noteModal').addEventListener('click', function(event) {
-      if (event.target === this) closeNoteModal();
-    });
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') closeNoteModal();
-    });
-
-    renderLiveNotes();
-    window.addEventListener('storage', renderLiveNotes);
-    setInterval(renderLiveNotes, 1000);
+    refreshRecordsState();
   </script>
 </body>
 </html>

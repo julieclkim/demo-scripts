@@ -3,207 +3,334 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UTHA Resolution Actions</title>
+  <title>UT Health Austin Cost and Coverage Follow-Up</title>
   <style>
     :root {
       --accent: #bf5700;
       --accent-dark: #8f4100;
-      --ink: #17202a;
-      --muted: #5f6b7a;
-      --line: #d9dee7;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d8dde5;
       --soft: #f6f7f9;
       --panel: #ffffff;
-      --good: #207a4d;
-      --warn: #9a5b00;
-      --bad: #a63232;
-      --blue: #245b91;
-      --shadow: 0 1px 3px rgba(16, 24, 40, .08);
+      --good: #216e4e;
+      --warn: #8a5a00;
+      --info: #2f5f8f;
     }
+
     * { box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; min-height: 100%; }
-    body { margin: 0; background: #fff; color: var(--ink); font: 14px/1.35 Arial, Helvetica, sans-serif; overflow: auto; }
+    html, body { width: 100%; min-height: 100%; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font: 13px/1.4 Arial, Helvetica, sans-serif;
+    }
+
+    button, a { font: inherit; }
+
     .app {
       width: 100%;
-      min-height: 100vh;
-      padding: clamp(10px, 1.5vw, 18px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 10px;
     }
-    .topbar {
+
+    .patient-header {
       border: 1px solid var(--line);
-      border-left: 6px solid var(--accent);
-      border-radius: 12px;
-      padding: 12px 14px;
+      border-left: 5px solid var(--accent);
       background: var(--panel);
-      box-shadow: var(--shadow);
+      padding: 12px 13px;
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      align-items: center;
+      align-items: flex-start;
     }
-    h1 { font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 4px; line-height: 1.15; }
-    h2 { font-size: 13px; margin: 0; padding: 10px 12px; background: var(--soft); border-bottom: 1px solid var(--line); }
-    .sub { color: var(--muted); font-size: 12px; }
-    .layout {
-      width: 100%;
-      flex: 1;
+
+    .patient-name {
+      margin: 0 0 2px;
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .patient-meta { color: var(--muted); font-size: 12px; }
+
+    .verified {
+      flex: 0 0 auto;
+      border: 1px solid #b9d8c8;
+      color: var(--good);
+      background: #f2faf5;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .stack { display: grid; gap: 9px; margin-top: 9px; }
+    .card { border: 1px solid var(--line); background: var(--panel); }
+
+    .card-title {
+      margin: 0;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .card-body { padding: 10px; }
+
+    .rows { display: grid; gap: 0; }
+
+    .row {
       display: grid;
-      grid-template-columns: minmax(320px, .9fr) minmax(420px, 1.1fr);
-      gap: 12px;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 9px;
+      padding: 6px 0;
+      border-bottom: 1px solid #eceff3;
       align-items: start;
     }
-    .column { display: grid; gap: 12px; }
-    .card { border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; box-shadow: var(--shadow); }
-    .content { padding: 12px; }
-    .rows { display: grid; gap: 8px; }
-    .row { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px; }
+
+    .row:last-child { border-bottom: 0; }
     .label { color: var(--muted); font-size: 12px; }
-    .value { font-weight: 700; }
-    .value.normal { font-weight: 400; }
-    .status-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid #edf0f4; padding: 8px 0; }
-    .status-row:last-child { border-bottom: 0; }
-    .pill { border-radius: 999px; padding: 3px 9px; font-size: 11px; background: #eef2f7; color: var(--muted); white-space: nowrap; }
-    .pill.good { background: #eef9f2; color: var(--good); }
-    .pill.warn { background: #fff4df; color: var(--warn); }
-    .pill.bad { background: #fff0f0; color: var(--bad); }
-    .hint { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-    .btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 9px; padding: 9px 10px; font-weight: 700; font-size: 12px; cursor: pointer; text-decoration: none; text-align: center; min-height: 36px; }
+    .value { color: var(--ink); }
+    .value.strong { font-weight: 700; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eef2f6;
+      color: #475467;
+    }
+
+    .status.good { background: #eef8f2; color: var(--good); }
+    .status.warn { background: #fff5df; color: var(--warn); }
+
+    .guidance {
+      display: grid;
+      gap: 8px;
+    }
+
+    .guidance-note {
+      margin: 0;
+      color: #344054;
+    }
+
+    .script-line {
+      border-left: 3px solid var(--info);
+      background: #f5f8fb;
+      padding: 8px 9px;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .script-line strong { color: var(--info); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 9px;
+      min-height: 34px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
     .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
     .btn.secondary { background: #fff; color: var(--accent); }
-    .btn.secondary:hover { background: #fff8f2; }
-    .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
-    .quick-actions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .action-panel { display: none; margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #fffdf9; }
-    .action-panel.show { display: block; }
-    textarea { width: 100%; min-height: 110px; border: 1px solid var(--line); border-radius: 9px; padding: 10px; font: 13px/1.4 Arial, Helvetica, sans-serif; resize: vertical; background: #fff; }
-    .toast { position: fixed; right: 16px; bottom: 16px; z-index: 20; display: none; background: #173f2a; color: #fff; padding: 10px 12px; border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.18); font-size: 13px; }
-    .toast.show { display: block; }
-    .notice { border: 1px solid #c9d7e8; background: #f5f9ff; color: #20364f; border-radius: 10px; padding: 10px; font-size: 13px; }
-    .footer { display: flex; gap: 8px; margin-top: 10px; }
-    .footer a { flex: 1; }
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      .topbar { align-items: flex-start; flex-direction: column; }
+    .btn.secondary:hover { background: #fff8f3; }
+    .btn.full { grid-column: 1 / -1; }
+
+    .footnote { margin-top: 7px; color: var(--muted); font-size: 10px; }
+
+    .toast {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 10;
+      display: none;
+      max-width: 300px;
+      background: #263238;
+      color: #fff;
+      padding: 9px 11px;
+      border-radius: 5px;
+      font-size: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .16);
     }
+
+    .toast.show { display: block; }
+
     @media (max-width: 560px) {
-      .row, .actions, .quick-actions-grid { grid-template-columns: 1fr; }
-      .app { padding: 10px; }
+      .app { padding: 8px; }
+      .row { grid-template-columns: 102px minmax(0, 1fr); }
+    }
+
+    @media (max-width: 380px) {
+      .patient-header { flex-direction: column; }
+      .actions { grid-template-columns: 1fr; }
+      .btn.full { grid-column: auto; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <section class="topbar">
+    <header class="patient-header">
       <div>
-        <h1>Cost Follow-Up</h1>
-        <div class="sub">Demo workflow for appointment cost and benefits estimate requests</div>
+        <h1 class="patient-name">Eunice Kim</h1>
+        <div class="patient-meta">DOB 03/22/1968 &nbsp;•&nbsp; Musculoskeletal Institute</div>
       </div>
-      <a class="btn secondary" id="backLink" href="patient-context.html">Back to context</a>
-    </section>
+      <span class="verified">Verified</span>
+    </header>
 
-    <section class="layout">
-      <section class="column">
-        <div class="card">
-          <h2>Current Interaction</h2>
-          <div class="content rows">
-            <div class="row"><div class="label">Patient</div><div class="value" id="patientName">Eunice Kim</div></div>
-            <div class="row"><div class="label">MRN</div><div class="value normal" id="mrn">7241930</div></div>
-            <div class="row"><div class="label">Department</div><div class="value normal" id="department">Musculoskeletal Institute</div></div>
-            <div class="row"><div class="label">Appointment</div><div class="value normal" id="appointmentDate">Loading...</div></div>
-            <div class="row"><div class="label">Patient asks</div><div class="value normal">Estimated appointment cost</div></div>
-          </div>
-        </div>
-
-      </section>
-
-      <section class="column">
-        <div class="card">
-          <h2>Cost Estimate Follow-Up</h2>
-          <div class="content">
-            <div class="notice">Use Copilot or the approved knowledge panel for cost language. Create a follow-up when the patient needs an estimate tied to coverage, deductible, copay, coinsurance, or authorization.</div>
-            <div class="actions">
-              <button class="btn" type="button" onclick="showPanel('costPanel')">Create cost estimate request</button>
-              <button class="btn secondary" type="button" onclick="toast('Benefits queue opened')">Open benefits queue</button>
-            </div>
-            <div class="action-panel" id="costPanel">
-              <div class="hint">Enter the request note for Billing or Benefits.</div>
-              <textarea id="costNote" aria-label="Cost estimate request note"></textarea>
-              <div class="actions">
-                <button class="btn" type="button" onclick="sendFollowUp('costNote','Cost estimate follow-up created')">Send request</button>
-                <button class="btn secondary" type="button" onclick="clearText('costNote')">Clear</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Demo Quick Actions</h2>
-          <div class="content">
-            <div class="quick-actions-grid">
-              <button class="btn secondary" type="button" onclick="toast('Warm transfer prepared')">Warm transfer</button>
-              <button class="btn secondary" type="button" onclick="toast('Secure flow opened')">Secure flow</button>
-              <button class="btn secondary" type="button" onclick="toast('Epic context opened')">Open Epic</button>
-              <button class="btn secondary" type="button" onclick="toast('Benefits queue opened')">Benefits queue</button>
-            </div>
-            <div class="footnote">Demo only. Buttons simulate workflow actions that could be driven by approved integrations.</div>
-          </div>
+    <div class="stack">
+      <section class="card">
+        <h2 class="card-title">Appointment Context</h2>
+        <div class="card-body rows">
+          <div class="row"><div class="label">Appointment</div><div class="value strong" id="appointmentDate">Loading...</div></div>
+          <div class="row"><div class="label">Location</div><div class="value">Health Transformation Building</div></div>
+          <div class="row"><div class="label">Insurance</div><div class="value">No changes reported</div></div>
+          <div class="row"><div class="label">Records follow-up</div><div class="value"><span class="status warn" id="recordsFollowUpStatus">Not yet created</span></div></div>
         </div>
       </section>
-    </section>
+
+      <section class="card">
+        <h2 class="card-title">Cost &amp; Coverage Guidance</h2>
+        <div class="card-body guidance">
+          <p class="guidance-note">Exact patient responsibility can vary by plan benefits and the services provided. Use the organization's approved estimate or coverage workflow before quoting an amount.</p>
+          <div class="script-line"><strong>Suggested response:</strong> The exact amount can depend on your insurance benefits and the services billed. I can submit a cost estimate request so you have a clearer estimate before your appointment.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">Actions</h2>
+        <div class="card-body">
+          <div class="actions">
+            <button class="btn" id="estimateButton" type="button" onclick="createEstimateRequest()">Create estimate request</button>
+            <button class="btn secondary" type="button" onclick="toast('Patient chart opened in demo')">Open patient chart</button>
+            <a class="btn secondary full" href="patient-context.html">Back to referral handoff</a>
+          </div>
+          <div class="footnote">Demo actions only. No patient responsibility amount is calculated or written back from this page.</div>
+        </div>
+      </section>
+    </div>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const qs = new URLSearchParams(window.location.search);
-    const get = (key, fallback) => qs.get(key) || fallback;
+    const DEMO_STATE_KEY = 'utha_referral_demo_state';
 
-    function thirdThursdayOfSeptember() {
-      const now = new Date();
-      let year = now.getFullYear();
-      let date = new Date(year, 8, 1, 14, 30, 0);
-      while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
-      date.setDate(date.getDate() + 14);
-      const min = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      if (date < min) {
-        year += 1;
-        date = new Date(year, 8, 1, 14, 30, 0);
-        while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
-        date.setDate(date.getDate() + 14);
+    function centralDateParts(now = new Date()) {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(now);
+
+      const values = {};
+      parts.forEach(part => {
+        if (part.type !== 'literal') values[part.type] = Number(part.value);
+      });
+      return values;
+    }
+
+    function selectedTuesdayDate(now = new Date()) {
+      const current = centralDateParts(now);
+      const today = new Date(Date.UTC(current.year, current.month - 1, current.day));
+      const day60 = new Date(today);
+      day60.setUTCDate(day60.getUTCDate() + 60);
+
+      const firstMonday = new Date(day60);
+      const daysToMonday = (8 - firstMonday.getUTCDay()) % 7;
+      firstMonday.setUTCDate(firstMonday.getUTCDate() + daysToMonday);
+
+      const selectedTuesday = new Date(firstMonday);
+      selectedTuesday.setUTCDate(selectedTuesday.getUTCDate() + 8);
+      return selectedTuesday;
+    }
+
+    function formatAppointment(date) {
+      const day = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(date);
+      return `${day} at 2:30 PM`;
+    }
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(DEMO_STATE_KEY) || '{}');
+      } catch (error) {
+        return {};
       }
-      return date;
     }
 
-    function formatAppt(date) {
-      const d = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(date);
-      return d + ' at 2:30 p.m.';
+    function saveState(state) {
+      localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state));
     }
 
-    const appt = get('appointment', formatAppt(thirdThursdayOfSeptember()));
-    document.getElementById('patientName').textContent = get('patient_name', 'Eunice Kim');
-    document.getElementById('mrn').textContent = get('mrn', '7241930');
-    document.getElementById('department').textContent = get('department', 'Musculoskeletal Institute');
-    document.getElementById('appointmentDate').textContent = appt;
-    document.getElementById('backLink').href = 'patient-context.html' + window.location.search;
+    function refreshState() {
+      const state = loadState();
+      const recordsStatus = document.getElementById('recordsFollowUpStatus');
+      const estimateButton = document.getElementById('estimateButton');
 
-    function showPanel(id) {
-      document.getElementById(id).classList.add('show');
+      if (state.recordsFollowUpCreated) {
+        recordsStatus.textContent = 'Created';
+        recordsStatus.className = 'status good';
+      } else {
+        recordsStatus.textContent = 'Not yet created';
+        recordsStatus.className = 'status warn';
+      }
+
+      if (state.estimateRequestCreated) {
+        estimateButton.textContent = 'Estimate request created';
+        estimateButton.disabled = true;
+        estimateButton.style.cursor = 'default';
+        estimateButton.style.opacity = '.78';
+      }
     }
 
-    function clearText(id) {
-      document.getElementById(id).value = '';
-      document.getElementById(id).focus();
+    function createEstimateRequest() {
+      const state = loadState();
+      state.estimateRequestCreated = true;
+      state.estimateRequestCreatedAt = new Date().toISOString();
+      saveState(state);
+      refreshState();
+      toast('Cost estimate request created');
     }
-
 
     function toast(message) {
       const el = document.getElementById('toast');
       el.textContent = message;
       el.classList.add('show');
       clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
     }
+
+    document.getElementById('appointmentDate').textContent = formatAppointment(selectedTuesdayDate());
+    refreshState();
   </script>
 </body>
 </html>
