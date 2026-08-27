@@ -327,8 +327,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const DEMO_STATE_KEY = 'utha_referral_demo_state';
-
     function centralDateParts(now = new Date()) {
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/Chicago',
@@ -382,44 +380,28 @@
       return `for ${day} at 2:30 PM`;
     }
 
-    function loadState() {
-      try {
-        return JSON.parse(localStorage.getItem(DEMO_STATE_KEY) || '{}');
-      } catch (error) {
-        return {};
-      }
-    }
-
-    function saveState(state) {
-      localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state));
-    }
-
-    const appointment = selectedTuesdayDate();
-    document.getElementById('appointmentDate').textContent = formatAppointment(appointment);
-    document.getElementById('handoffAppointment').textContent = formatAppointment(appointment);
-    document.getElementById('activityAppointment').textContent = formatActivityDate(appointment);
-
-    function refreshRecordsState() {
-      const state = loadState();
+    function resetRecordsState() {
       const status = document.getElementById('recordsStatus');
       const button = document.getElementById('recordsFollowUp');
 
-      if (state.recordsFollowUpCreated) {
-        status.textContent = 'Follow-up created';
-        status.className = 'status good';
-        button.textContent = 'Records follow-up created';
-        button.disabled = true;
-        button.style.cursor = 'default';
-        button.style.opacity = '.78';
-      }
+      status.textContent = 'Verification needed';
+      status.className = 'status warn';
+      button.textContent = 'Create records follow-up';
+      button.disabled = false;
+      button.style.cursor = 'pointer';
+      button.style.opacity = '1';
     }
 
     function createRecordsFollowUp() {
-      const state = loadState();
-      state.recordsFollowUpCreated = true;
-      state.recordsFollowUpCreatedAt = new Date().toISOString();
-      saveState(state);
-      refreshRecordsState();
+      const status = document.getElementById('recordsStatus');
+      const button = document.getElementById('recordsFollowUp');
+
+      status.textContent = 'Follow-up created';
+      status.className = 'status good';
+      button.textContent = 'Records follow-up created';
+      button.disabled = true;
+      button.style.cursor = 'default';
+      button.style.opacity = '.78';
       toast('Records follow-up created');
     }
 
@@ -431,7 +413,11 @@
       window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
     }
 
-    refreshRecordsState();
+    resetRecordsState();
+    window.addEventListener('pageshow', resetRecordsState);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) resetRecordsState();
+    });
   </script>
 </body>
 </html>
