@@ -1,422 +1,515 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UT Health Austin Referral Handoff</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kick It California - Client Context</title>
   <style>
     :root {
-      --accent: #bf5700;
-      --accent-dark: #8f4100;
-      --ink: #1f2933;
-      --muted: #667085;
-      --line: #d8dde5;
-      --soft: #f6f7f9;
-      --panel: #ffffff;
-      --good: #216e4e;
-      --warn: #8a5a00;
-      --info: #2f5f8f;
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #202124;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --soft: #f9fafb;
+      --accent: #ff451a;
+      --accent-dark: #e63b14;
+      --navy: #182b49;
+      --success: #166534;
+      --success-bg: #f0fdf4;
+      --success-line: #bbf7d0;
+      --warning-bg: #fff7ed;
+      --warning-line: #fed7aa;
+      --warning-text: #9a3412;
+      --shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
     }
 
     * { box-sizing: border-box; }
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-    }
-
     body {
       margin: 0;
-      background: #fff;
-      color: var(--ink);
-      font: 13px/1.4 Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    button, a { font: inherit; }
-
-    .app {
-      width: 100%;
-      max-width: 760px;
+    .page {
+      width: min(100%, 520px);
       margin: 0 auto;
-      padding: 10px;
+      padding: 14px;
     }
 
-    .patient-header {
+    .shell {
+      background: var(--card);
       border: 1px solid var(--line);
-      border-left: 5px solid var(--accent);
-      background: var(--panel);
-      padding: 12px 13px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      align-items: flex-start;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
     }
 
-    .patient-name {
-      margin: 0 0 2px;
-      font-size: 19px;
-      line-height: 1.2;
+    .eyebrow {
+      font-size: 11px;
+      line-height: 1;
       font-weight: 700;
-    }
-
-    .patient-meta {
+      letter-spacing: .08em;
+      text-transform: uppercase;
       color: var(--muted);
-      font-size: 12px;
+      margin-bottom: 5px;
     }
 
-    .verified {
-      flex: 0 0 auto;
-      border: 1px solid #b9d8c8;
-      color: var(--good);
-      background: #f2faf5;
+    .title {
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 750;
+      color: var(--navy);
+    }
+
+    .crm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
       border-radius: 999px;
-      padding: 4px 8px;
+      background: #f3f4f6;
+      color: #4b5563;
+      font-size: 11px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .crm-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00a1e0;
+    }
+
+    .content {
+      padding: 15px 16px 16px;
+    }
+
+    .client-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .client-name {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 760;
+      letter-spacing: -0.02em;
+    }
+
+    .subline {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
       font-size: 11px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .stack {
-      display: grid;
-      gap: 9px;
-      margin-top: 9px;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      background: var(--panel);
-    }
-
-    .card-title {
-      margin: 0;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--line);
-      background: var(--soft);
-      font-size: 12px;
-      font-weight: 700;
-      color: #374151;
-    }
-
-    .card-body { padding: 10px; }
-
-    .handoff {
-      display: grid;
-      gap: 8px;
-    }
-
-    .handoff-summary {
-      margin: 0;
-      font-size: 13px;
-    }
-
-    .reason {
-      border-left: 3px solid var(--accent);
-      padding: 7px 9px;
-      background: #fff8f3;
-    }
-
-    .reason strong { display: block; margin-bottom: 2px; }
-
-    .opener {
-      color: #344054;
-      font-size: 12px;
-      padding-top: 2px;
-    }
-
-    .opener strong { color: var(--info); }
-
-    .detail-grid {
+    .facts {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 9px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
-    .rows {
-      display: grid;
-      gap: 0;
+    .fact {
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .value {
+      display: block;
+      color: #30343b;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .section {
+      margin-top: 14px;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      color: #4b5563;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .checkin {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      overflow: hidden;
+      background: #fff;
     }
 
     .row {
       display: grid;
-      grid-template-columns: 110px minmax(0, 1fr);
-      gap: 9px;
-      padding: 6px 0;
-      border-bottom: 1px solid #eceff3;
-      align-items: start;
+      grid-template-columns: 122px 1fr;
+      gap: 10px;
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.4;
     }
 
     .row:last-child { border-bottom: 0; }
-    .label { color: var(--muted); font-size: 12px; }
-    .value { color: var(--ink); }
-    .value.strong { font-weight: 700; }
 
-    .status {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      background: #eef2f6;
-      color: #475467;
+    .row-key {
+      color: var(--muted);
+      font-weight: 650;
     }
 
-    .status.good { background: #eef8f2; color: var(--good); }
-    .status.warn { background: #fff5df; color: var(--warn); }
-
-    .activity {
-      display: grid;
-      gap: 7px;
+    .row-value {
+      color: #30343b;
+      font-weight: 590;
     }
 
-    .activity-item {
-      display: grid;
-      grid-template-columns: 18px minmax(0, 1fr);
-      gap: 7px;
-      align-items: start;
+    .need {
+      margin-top: 9px;
+      padding: 11px 12px;
+      border: 1px solid var(--warning-line);
+      border-radius: 10px;
+      background: var(--warning-bg);
     }
 
-    .check {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #eef8f2;
-      color: var(--good);
+    .need .label {
+      color: var(--warning-text);
+      margin-bottom: 4px;
+    }
+
+    .need strong {
+      color: #7c2d12;
+      font-size: 13px;
+    }
+
+    .guidance {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-      margin-top: 1px;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      background: #eff6ff;
     }
 
-    .activity-label { font-size: 12px; }
-    .activity-label span { color: var(--muted); }
+    .guidance-copy {
+      min-width: 0;
+    }
+
+    .guidance-title {
+      margin: 0 0 2px;
+      color: #1e3a8a;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .guidance-text {
+      margin: 0;
+      color: #475569;
+      font-size: 11px;
+      line-height: 1.35;
+    }
 
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 7px;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      font: inherit;
+      cursor: pointer;
     }
 
     .btn {
-      appearance: none;
-      border: 1px solid var(--accent);
-      background: var(--accent);
-      color: #fff;
-      padding: 8px 9px;
-      min-height: 34px;
-      text-decoration: none;
-      text-align: center;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 5px;
+      min-height: 38px;
+      border-radius: 9px;
+      padding: 9px 11px;
+      font-size: 12px;
+      font-weight: 750;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
     }
 
-    .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
-    .btn.secondary { background: #fff; color: var(--accent); }
-    .btn.secondary:hover { background: #fff8f3; }
-    .btn.full { grid-column: 1 / -1; }
+    .btn:active { transform: translateY(1px); }
 
-    .footnote {
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent-dark); }
+
+    .btn-secondary {
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #374151;
+    }
+
+    .btn-secondary:hover { background: #f9fafb; }
+
+    .followup-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+    }
+
+    .followup-panel.open { display: block; }
+
+    .followup-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 8px;
       margin-top: 7px;
-      color: var(--muted);
-      font-size: 10px;
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #374151;
+      padding: 8px 9px;
+      font: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .field:focus {
+      border-color: #9ca3af;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, .15);
+    }
+
+    .confirm-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .confirm-row .btn {
+      min-height: 34px;
+      padding-inline: 14px;
     }
 
     .toast {
-      position: fixed;
-      right: 12px;
-      bottom: 12px;
-      z-index: 10;
       display: none;
-      max-width: 300px;
-      background: #263238;
-      color: #fff;
-      padding: 9px 11px;
-      border-radius: 5px;
-      font-size: 12px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, .16);
+      margin-top: 10px;
+      padding: 9px 10px;
+      border: 1px solid var(--success-line);
+      border-radius: 9px;
+      background: var(--success-bg);
+      color: var(--success);
+      font-size: 11px;
+      font-weight: 650;
     }
 
     .toast.show { display: block; }
 
-    @media (max-width: 560px) {
-      .app { padding: 8px; }
-      .detail-grid { grid-template-columns: 1fr; }
-      .patient-header { align-items: flex-start; }
-      .row { grid-template-columns: 102px minmax(0, 1fr); }
+    .footer-note {
+      margin-top: 11px;
+      color: #9ca3af;
+      font-size: 10px;
+      line-height: 1.35;
+      text-align: center;
     }
 
-    @media (max-width: 380px) {
-      .patient-header { flex-direction: column; }
+    @media (max-width: 430px) {
+      .page { padding: 8px; }
+      .facts { grid-template-columns: 1fr 1fr; }
+      .row { grid-template-columns: 105px 1fr; }
       .actions { grid-template-columns: 1fr; }
-      .btn.full { grid-column: auto; }
+      .followup-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <header class="patient-header">
-      <div>
-        <h1 class="patient-name">Eunice Kim</h1>
-        <div class="patient-meta">DOB 03/22/1968 &nbsp;•&nbsp; Mobile ending 1615 &nbsp;•&nbsp; English</div>
-      </div>
-      <span class="verified">Verified</span>
-    </header>
-
-    <div class="stack">
-      <section class="card">
-        <h2 class="card-title">Virtual Agent Handoff</h2>
-        <div class="card-body handoff">
-          <p class="handoff-summary">Eunice completed verification, scheduled her Musculoskeletal Institute visit for <strong id="handoffAppointment">loading...</strong>, and received confirmation by text.</p>
-          <div class="reason">
-            <strong>Reason for transfer</strong>
-            Patient wants to confirm whether her outside imaging or records were received.
-          </div>
-          <div class="opener"><strong>Suggested opener:</strong> Hi Eunice, I see your appointment is scheduled and you're checking whether your outside imaging was received. I can help check that for you.</div>
+  <main class="page">
+    <section class="shell" aria-label="Kick It California client context">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Client Context</div>
+          <div class="title">Kick It California</div>
         </div>
-      </section>
+        <div class="crm-badge" title="Example CRM source">
+          <span class="crm-dot" aria-hidden="true"></span>
+          Salesforce
+        </div>
+      </header>
 
-      <div class="detail-grid">
-        <section class="card">
-          <h2 class="card-title">Appointment</h2>
-          <div class="card-body rows">
-            <div class="row"><div class="label">Status</div><div class="value"><span class="status good">Scheduled</span></div></div>
-            <div class="row"><div class="label">Date &amp; time</div><div class="value strong" id="appointmentDate">Loading...</div></div>
-            <div class="row"><div class="label">Department</div><div class="value">Musculoskeletal Institute</div></div>
-            <div class="row"><div class="label">Location</div><div class="value">Health Transformation Building</div></div>
+      <div class="content">
+        <div class="client-header">
+          <div>
+            <h1 class="client-name">Devin Beck</h1>
+            <div class="subline">Post-quit-date follow-up</div>
+          </div>
+          <span class="pill">Existing client</span>
+        </div>
+
+        <div class="facts" aria-label="Client details">
+          <div class="fact">
+            <span class="label">Preferred language</span>
+            <span class="value">English</span>
+          </div>
+          <div class="fact">
+            <span class="label">Quit date</span>
+            <span class="value">Oct 11, 2026</span>
+          </div>
+          <div class="fact">
+            <span class="label">NRT</span>
+            <span class="value">Nicotine patches</span>
+          </div>
+          <div class="fact">
+            <span class="label">Contact reason</span>
+            <span class="value">Coaching follow-up</span>
+          </div>
+        </div>
+
+        <section class="section">
+          <h2 class="section-title">Today's check-in</h2>
+          <div class="checkin">
+            <div class="row">
+              <div class="row-key">Progress</div>
+              <div class="row-value">Smoked 3 cigarettes yesterday</div>
+            </div>
+            <div class="row">
+              <div class="row-key">Triggers</div>
+              <div class="row-value">After lunch, work stress</div>
+            </div>
+            <div class="row">
+              <div class="row-key">What helped</div>
+              <div class="row-value">Taking a walk helped with one craving</div>
+            </div>
+          </div>
+
+          <div class="need">
+            <span class="label">Needs help with</span>
+            <strong>Patch use after smoking</strong>
           </div>
         </section>
 
-        <section class="card">
-          <h2 class="card-title">Referral &amp; Records</h2>
-          <div class="card-body rows">
-            <div class="row"><div class="label">Referral status</div><div class="value">Appointment scheduled</div></div>
-            <div class="row"><div class="label">Insurance</div><div class="value">No changes reported</div></div>
-            <div class="row"><div class="label">Outside imaging</div><div class="value"><span class="status warn" id="recordsStatus">Verification needed</span></div></div>
-            <div class="row"><div class="label">Earlier opening</div><div class="value">Patient requested</div></div>
+        <section class="section">
+          <h2 class="section-title">Coach guidance</h2>
+          <div class="guidance">
+            <div class="guidance-copy">
+              <p class="guidance-title">NRT guidance required</p>
+              <p class="guidance-text">Use approved coaching guidance before advising.</p>
+            </div>
           </div>
         </section>
-      </div>
 
-      <section class="card">
-        <h2 class="card-title">Referral Activity</h2>
-        <div class="card-body activity">
-          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Referral outreach accepted</div></div>
-          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Identity verified <span>with DOB and SMS code</span></div></div>
-          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Appointment scheduled <span id="activityAppointment"></span></div></div>
-          <div class="activity-item"><div class="check">✓</div><div class="activity-label">Confirmation and preparation details sent by SMS</div></div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="updateRecordBtn" type="button">Update Client Record</button>
+          <button class="btn btn-primary" id="followupBtn" type="button">Schedule Follow-Up</button>
         </div>
-      </section>
 
-      <section class="card">
-        <h2 class="card-title">Actions</h2>
-        <div class="card-body">
-          <div class="actions">
-            <button class="btn" id="recordsFollowUp" type="button" onclick="createRecordsFollowUp()">Create records follow-up</button>
-            <a class="btn secondary" href="records-cost-actions.html">Cost / coverage</a>
-            <button class="btn secondary full" type="button" onclick="toast('Patient chart opened in demo')">Open patient chart</button>
+        <div class="followup-panel" id="followupPanel" aria-hidden="true">
+          <span class="label">Follow-up preference</span>
+          <div class="followup-grid">
+            <select class="field" id="followupDay" aria-label="Follow-up day">
+              <option>Friday</option>
+              <option>Monday</option>
+              <option>Tuesday</option>
+            </select>
+            <select class="field" id="followupTime" aria-label="Follow-up time">
+              <option>Afternoon</option>
+              <option>Morning</option>
+              <option>Evening</option>
+            </select>
           </div>
-          <div class="footnote">Demo actions only. The production source of truth and write-back workflow would follow the organization's approved EHR integration pattern.</div>
+          <div class="confirm-row">
+            <button class="btn btn-primary" id="confirmFollowupBtn" type="button">Confirm</button>
+          </div>
         </div>
-      </section>
-    </div>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <div class="footer-note">Demo client context • Configurable in Genesys Script Builder</div>
+      </div>
+    </section>
   </main>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
   <script>
-    function centralDateParts(now = new Date()) {
-      const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/Chicago',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      }).formatToParts(now);
+    const updateRecordBtn = document.getElementById('updateRecordBtn');
+    const followupBtn = document.getElementById('followupBtn');
+    const followupPanel = document.getElementById('followupPanel');
+    const confirmFollowupBtn = document.getElementById('confirmFollowupBtn');
+    const followupDay = document.getElementById('followupDay');
+    const followupTime = document.getElementById('followupTime');
+    const toast = document.getElementById('toast');
 
-      const values = {};
-      parts.forEach(part => {
-        if (part.type !== 'literal') values[part.type] = Number(part.value);
-      });
-      return values;
+    let toastTimer;
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
     }
 
-    function selectedTuesdayDate(now = new Date()) {
-      const current = centralDateParts(now);
-      const today = new Date(Date.UTC(current.year, current.month - 1, current.day));
+    updateRecordBtn.addEventListener('click', () => {
+      showToast('Client record updated successfully.');
+      updateRecordBtn.textContent = 'Record Updated';
+    });
 
-      // Match the AVA rule: start at runtime + 60 days, find the first Monday,
-      // then Eunice selects the Tuesday in the immediately following week.
-      const day60 = new Date(today);
-      day60.setUTCDate(day60.getUTCDate() + 60);
+    followupBtn.addEventListener('click', () => {
+      const isOpen = followupPanel.classList.toggle('open');
+      followupPanel.setAttribute('aria-hidden', String(!isOpen));
+      if (isOpen) followupDay.focus();
+    });
 
-      const firstMonday = new Date(day60);
-      const daysToMonday = (8 - firstMonday.getUTCDay()) % 7;
-      firstMonday.setUTCDate(firstMonday.getUTCDate() + daysToMonday);
-
-      const selectedTuesday = new Date(firstMonday);
-      selectedTuesday.setUTCDate(selectedTuesday.getUTCDate() + 8);
-      return selectedTuesday;
-    }
-
-    function formatAppointment(date) {
-      const day = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'UTC',
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      }).format(date);
-      return `${day} at 2:30 PM`;
-    }
-
-    function formatActivityDate(date) {
-      const day = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'UTC',
-        month: 'short',
-        day: 'numeric'
-      }).format(date);
-      return `for ${day} at 2:30 PM`;
-    }
-
-    function resetRecordsState() {
-      const status = document.getElementById('recordsStatus');
-      const button = document.getElementById('recordsFollowUp');
-
-      status.textContent = 'Verification needed';
-      status.className = 'status warn';
-      button.textContent = 'Create records follow-up';
-      button.disabled = false;
-      button.style.cursor = 'pointer';
-      button.style.opacity = '1';
-    }
-
-    function createRecordsFollowUp() {
-      const status = document.getElementById('recordsStatus');
-      const button = document.getElementById('recordsFollowUp');
-
-      status.textContent = 'Follow-up created';
-      status.className = 'status good';
-      button.textContent = 'Records follow-up created';
-      button.disabled = true;
-      button.style.cursor = 'default';
-      button.style.opacity = '.78';
-      toast('Records follow-up created');
-    }
-
-    function toast(message) {
-      const el = document.getElementById('toast');
-      el.textContent = message;
-      el.classList.add('show');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-    }
-
-    resetRecordsState();
-    window.addEventListener('pageshow', resetRecordsState);
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) resetRecordsState();
+    confirmFollowupBtn.addEventListener('click', () => {
+      showToast(`Follow-up scheduled for ${followupDay.value} ${followupTime.value.toLowerCase()}.`);
+      followupPanel.classList.remove('open');
+      followupPanel.setAttribute('aria-hidden', 'true');
+      followupBtn.textContent = 'Follow-Up Scheduled';
     });
   </script>
 </body>
