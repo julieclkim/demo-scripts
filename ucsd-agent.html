@@ -3,30 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Kick It California - Agent Script</title>
+  <title>Kick It California - Client Context</title>
   <style>
     :root {
-      --bg: #f6f7f9;
+      --bg: #f5f6f8;
       --panel: #ffffff;
-      --soft: #f9fafb;
+      --soft: #f8fafc;
       --text: #1f2937;
       --muted: #6b7280;
       --line: #e5e7eb;
       --accent: #ff451a;
-      --accent-hover: #e83d14;
+      --accent-hover: #e53d16;
+      --info-bg: #f4f7fb;
+      --info-line: #dbe4ef;
       --success: #166534;
       --success-bg: #f0fdf4;
-      --success-line: #bbf7d0;
-      --focus: rgba(255, 69, 26, 0.14);
       --radius: 10px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       min-width: 0;
       min-height: 100%;
@@ -34,27 +31,15 @@
       color: var(--text);
       font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
     }
 
-    body {
-      min-height: 100dvh;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    body { min-height: 100dvh; }
+    button { font: inherit; }
 
     .app {
       width: 100%;
       min-width: 0;
-      padding: clamp(8px, 1.4vw, 16px);
+      padding: clamp(8px, 1.25vw, 16px);
     }
 
     .script {
@@ -71,45 +56,38 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      min-width: 0;
-      padding: clamp(12px, 1.6vw, 18px);
+      padding: clamp(12px, 1.4vw, 17px);
       border-bottom: 1px solid var(--line);
     }
 
-    .header-copy {
-      min-width: 0;
-    }
-
     .eyebrow {
-      margin-bottom: 4px;
-      font-size: 12px;
-      line-height: 1.2;
-      font-weight: 750;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      margin-bottom: 3px;
       color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .07em;
+      text-transform: uppercase;
     }
 
-    .header h1 {
+    h1 {
       margin: 0;
-      font-size: clamp(18px, 1.9vw, 22px);
+      font-size: clamp(18px, 2vw, 23px);
       line-height: 1.2;
-      font-weight: 730;
-      letter-spacing: -0.015em;
+      font-weight: 760;
     }
 
     .status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       flex: 0 0 auto;
       padding: 6px 9px;
-      border: 1px solid var(--line);
+      border: 1px solid #d1fae5;
       border-radius: 999px;
-      background: var(--soft);
-      color: #4b5563;
-      font-size: 13px;
-      font-weight: 650;
+      background: #f0fdf4;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 700;
       white-space: nowrap;
     }
 
@@ -122,15 +100,74 @@
 
     .content {
       display: grid;
-      gap: clamp(10px, 1.4vw, 16px);
-      padding: clamp(12px, 1.6vw, 18px);
-      min-width: 0;
+      gap: 12px;
+      padding: clamp(10px, 1.5vw, 18px);
     }
 
-    .top-grid {
+    .guidance {
+      position: relative;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-      gap: clamp(10px, 1.4vw, 16px);
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 12px 13px;
+      border: 1px solid var(--info-line);
+      border-radius: var(--radius);
+      background: var(--info-bg);
+    }
+
+    .guidance.hidden { display: none; }
+
+    .guidance-icon {
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 7px;
+      background: #e8eef7;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .guidance-label {
+      margin-bottom: 3px;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+    }
+
+    .guidance-copy {
+      margin: 0;
+      color: #334155;
+      font-size: clamp(14px, 1.35vw, 16px);
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .dismiss {
+      display: grid;
+      place-items: center;
+      width: 29px;
+      height: 29px;
+      padding: 0;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .dismiss:hover { background: #e9eef5; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, .8fr) minmax(360px, 1.2fr);
+      gap: 12px;
       min-width: 0;
     }
 
@@ -138,7 +175,7 @@
       min-width: 0;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: var(--panel);
+      background: #fff;
       overflow: hidden;
     }
 
@@ -148,29 +185,27 @@
       justify-content: space-between;
       gap: 10px;
       padding: 10px 12px;
-      background: var(--soft);
       border-bottom: 1px solid var(--line);
+      background: var(--soft);
     }
 
     .panel-title {
       margin: 0;
-      font-size: 13px;
-      line-height: 1.2;
+      font-size: 12px;
       font-weight: 800;
-      letter-spacing: .065em;
+      letter-spacing: .055em;
       text-transform: uppercase;
       color: #4b5563;
     }
 
     .source {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 650;
+      color: #9ca3af;
+      font-size: 11px;
       white-space: nowrap;
     }
 
     .client {
-      padding: 12px;
+      padding: 13px;
     }
 
     .client-row {
@@ -183,10 +218,10 @@
 
     .client-name {
       margin: 0;
-      font-size: clamp(20px, 2.1vw, 24px);
+      font-size: clamp(20px, 2.1vw, 26px);
       line-height: 1.15;
-      font-weight: 750;
-      letter-spacing: -0.015em;
+      font-weight: 760;
+      letter-spacing: -0.02em;
     }
 
     .client-sub {
@@ -196,26 +231,27 @@
     }
 
     .pill {
-      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
       padding: 5px 8px;
       border-radius: 999px;
       background: #f3f4f6;
       color: #4b5563;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 750;
       white-space: nowrap;
     }
 
     .facts {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
-      min-width: 0;
     }
 
     .fact {
       min-width: 0;
       padding: 9px 10px;
+      border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--soft);
     }
@@ -224,271 +260,117 @@
       display: block;
       margin-bottom: 3px;
       color: var(--muted);
-      font-size: 11px;
-      line-height: 1.25;
-      font-weight: 760;
-      letter-spacing: .055em;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .05em;
       text-transform: uppercase;
     }
 
     .value {
       display: block;
       min-width: 0;
-      font-size: 14px;
+      font-size: clamp(13px, 1.25vw, 15px);
       line-height: 1.35;
       font-weight: 650;
       overflow-wrap: anywhere;
     }
 
-    .summary {
-      display: grid;
-      gap: 0;
-    }
+    .summary { display: grid; }
 
     .summary-row {
       display: grid;
-      grid-template-columns: minmax(92px, .42fr) minmax(0, 1fr);
+      grid-template-columns: minmax(100px, .42fr) minmax(0, 1fr);
       gap: 10px;
       padding: 10px 12px;
       border-bottom: 1px solid var(--line);
-      font-size: 14px;
+      font-size: clamp(13px, 1.25vw, 15px);
       line-height: 1.4;
-      min-width: 0;
     }
 
-    .summary-row:last-child {
-      border-bottom: 0;
-    }
+    .summary-row:last-child { border-bottom: 0; }
+    .summary-key { color: var(--muted); font-weight: 650; }
+    .summary-value { min-width: 0; font-weight: 620; overflow-wrap: anywhere; }
 
-    .summary-key {
-      color: var(--muted);
-      font-weight: 650;
-    }
-
-    .summary-value {
-      min-width: 0;
-      font-weight: 620;
-      overflow-wrap: anywhere;
-    }
-
-    .action-panel {
-      padding: clamp(12px, 1.5vw, 16px);
-    }
-
-    .action-head {
+    .actions {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .action-copy h2 {
-      margin: 0 0 3px;
-      font-size: 16px;
-      line-height: 1.25;
-      font-weight: 740;
-    }
-
-    .action-copy p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    .followup-form {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      justify-content: flex-end;
       gap: 8px;
-      align-items: end;
-      min-width: 0;
-    }
-
-    .field-group {
-      min-width: 0;
-    }
-
-    .field-label {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.2;
-      font-weight: 760;
-      letter-spacing: .045em;
-      text-transform: uppercase;
-    }
-
-    .field {
-      width: 100%;
-      min-width: 0;
-      height: 42px;
-      padding: 0 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background: #fff;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-    }
-
-    .field:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--focus);
+      flex-wrap: wrap;
     }
 
     .btn {
-      min-height: 42px;
-      border: 0;
+      min-height: 40px;
+      border: 1px solid transparent;
       border-radius: 8px;
-      padding: 9px 14px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 760;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      border-color: #d1d5db;
+      background: #fff;
+      color: #374151;
+    }
+
+    .btn-secondary:hover { background: #f9fafb; }
+
+    .btn-primary {
       background: var(--accent);
       color: #fff;
-      font-size: 14px;
-      font-weight: 760;
-      white-space: nowrap;
-      transition: background .14s ease, transform .05s ease;
     }
 
-    .btn:hover {
-      background: var(--accent-hover);
-    }
+    .btn-primary:hover { background: var(--accent-hover); }
 
-    .btn:active {
-      transform: translateY(1px);
-    }
-
-    .btn:focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 2px;
-    }
-
-    .confirmation {
+    .toast {
       display: none;
-      align-items: flex-start;
-      gap: 9px;
-      margin-top: 10px;
-      padding: 10px 11px;
-      border: 1px solid var(--success-line);
+      padding: 9px 11px;
+      border: 1px solid #bbf7d0;
       border-radius: 8px;
       background: var(--success-bg);
       color: var(--success);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .confirmation.show {
-      display: flex;
-    }
-
-    .check {
-      display: inline-grid;
-      place-items: center;
-      flex: 0 0 18px;
-      width: 18px;
-      height: 18px;
-      margin-top: 1px;
-      border-radius: 50%;
-      background: #dcfce7;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .save-meta {
-      margin-top: 2px;
-      color: #4b5563;
       font-size: 12px;
+      font-weight: 650;
     }
+
+    .toast.show { display: block; }
 
     .footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
+      padding: 8px 12px;
       border-top: 1px solid var(--line);
       background: var(--soft);
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.3;
-    }
-
-    .footer span:last-child {
+      color: #9ca3af;
+      font-size: 10px;
       text-align: right;
     }
 
-    @media (max-width: 760px) {
-      .followup-form {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .field-group.queue {
-        grid-column: 1 / -1;
-      }
-
-      .btn {
-        width: 100%;
-      }
+    @media (max-width: 820px) {
+      .main-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 480px) {
-      .header {
-        align-items: flex-start;
-      }
-
-      .status {
-        padding: 5px 7px;
-        font-size: 11px;
-      }
-
-      .client-row {
-        align-items: flex-start;
-      }
-
-      .facts {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .summary-row {
-        grid-template-columns: 86px minmax(0, 1fr);
-      }
-
-      .followup-form {
-        grid-template-columns: 1fr;
-      }
-
-      .field-group.queue {
-        grid-column: auto;
-      }
-
-      .footer {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .footer span:last-child {
-        text-align: left;
-      }
+    @media (max-width: 520px) {
+      .app { padding: 7px; }
+      .header { align-items: flex-start; }
+      .status { font-size: 11px; }
+      .guidance { grid-template-columns: auto minmax(0, 1fr) auto; }
+      .facts { grid-template-columns: 1fr 1fr; }
+      .summary-row { grid-template-columns: 92px minmax(0, 1fr); }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      .btn { width: 100%; }
     }
 
-    @media (max-width: 330px) {
-      .facts {
-        grid-template-columns: 1fr;
-      }
-
-      .summary-row {
-        grid-template-columns: 1fr;
-        gap: 3px;
-      }
+    @media (max-width: 340px) {
+      .facts { grid-template-columns: 1fr; }
+      .summary-row { grid-template-columns: 1fr; gap: 3px; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <section class="script" aria-label="Kick It California agent script demo">
+    <section class="script" aria-label="Kick It California client context">
       <header class="header">
-        <div class="header-copy">
+        <div>
           <div class="eyebrow">Agent Script</div>
           <h1>Kick It California</h1>
         </div>
@@ -499,11 +381,20 @@
       </header>
 
       <div class="content">
-        <div class="top-grid">
+        <section class="guidance" id="guidanceBanner" aria-label="Opening guidance">
+          <div class="guidance-icon" aria-hidden="true">i</div>
+          <div>
+            <div class="guidance-label">Suggested opening</div>
+            <p class="guidance-copy">“Hi Devin, this is Jen with UCSD’s Kick It California team. I see you had a question about your nicotine patch, and that after lunch and work stress were the toughest moments yesterday. We can pick up right there.”</p>
+          </div>
+          <button class="dismiss" id="dismissGuidance" type="button" aria-label="Dismiss opening guidance">×</button>
+        </section>
+
+        <div class="main-grid">
           <section class="panel" aria-labelledby="client-title">
             <div class="panel-head">
               <h2 class="panel-title" id="client-title">Client</h2>
-              <span class="source">Genesys client profile</span>
+              <span class="source">Client profile</span>
             </div>
             <div class="client">
               <div class="client-row">
@@ -521,7 +412,7 @@
                 </div>
                 <div class="fact">
                   <span class="label">Quit date</span>
-                  <span class="value">Oct 11, 2026</span>
+                  <span class="value" id="quitDate">—</span>
                 </div>
                 <div class="fact">
                   <span class="label">NRT</span>
@@ -535,12 +426,16 @@
             </div>
           </section>
 
-          <section class="panel" aria-labelledby="checkin-title">
+          <section class="panel" aria-labelledby="transfer-title">
             <div class="panel-head">
-              <h2 class="panel-title" id="checkin-title">Today's Check-In</h2>
-              <span class="source">From current interaction</span>
+              <h2 class="panel-title" id="transfer-title">Transfer Summary</h2>
+              <span class="source">Current interaction</span>
             </div>
             <div class="summary">
+              <div class="summary-row">
+                <div class="summary-key">Reason</div>
+                <div class="summary-value">Post-quit-date coaching follow-up</div>
+              </div>
               <div class="summary-row">
                 <div class="summary-key">Progress</div>
                 <div class="summary-value">Smoked 3 cigarettes yesterday</div>
@@ -561,82 +456,54 @@
           </section>
         </div>
 
-        <section class="panel action-panel" aria-labelledby="followup-title">
-          <div class="action-head">
-            <div class="action-copy">
-              <h2 id="followup-title">Schedule Follow-Up</h2>
-              <p>Create the next coaching callback without leaving the interaction.</p>
-            </div>
-          </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="updateBtn" type="button">Update Client Record</button>
+          <button class="btn btn-primary" id="scheduleBtn" type="button">Schedule Follow-Up</button>
+        </div>
 
-          <form class="followup-form" id="followupForm">
-            <div class="field-group">
-              <label class="field-label" for="followupDate">Date</label>
-              <select class="field" id="followupDate" aria-label="Follow-up date">
-                <option value="Friday, Oct 16">Friday, Oct 16</option>
-                <option value="Monday, Oct 19">Monday, Oct 19</option>
-                <option value="Tuesday, Oct 20">Tuesday, Oct 20</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="followupTime">Time</label>
-              <select class="field" id="followupTime" aria-label="Follow-up time">
-                <option value="2:00 PM">2:00 PM</option>
-                <option value="3:00 PM">3:00 PM</option>
-                <option value="4:00 PM">4:00 PM</option>
-              </select>
-            </div>
-
-            <div class="field-group queue">
-              <label class="field-label" for="followupQueue">Queue</label>
-              <select class="field" id="followupQueue" aria-label="Callback queue">
-                <option value="Kick It California - Quit Coaching">Kick It California - Quit Coaching</option>
-              </select>
-            </div>
-
-            <button class="btn" id="scheduleBtn" type="submit">Schedule</button>
-          </form>
-
-          <div class="confirmation" id="confirmation" role="status" aria-live="polite">
-            <span class="check" aria-hidden="true">✓</span>
-            <div>
-              <strong id="confirmationText">Follow-up scheduled.</strong>
-              <div class="save-meta">Saved in Genesys · Callback created for Quit Coaching</div>
-            </div>
-          </div>
-        </section>
+        <div class="toast" id="toast" role="status" aria-live="polite">Client record updated.</div>
       </div>
 
-      <footer class="footer">
-        <span>Demo data</span>
-        <span>Client context + interaction data + agent action</span>
-      </footer>
+      <footer class="footer">Demo data · Configurable agent script</footer>
     </section>
   </main>
 
   <script>
-    const followupForm = document.getElementById('followupForm');
-    const followupDate = document.getElementById('followupDate');
-    const followupTime = document.getElementById('followupTime');
-    const followupQueue = document.getElementById('followupQueue');
-    const confirmation = document.getElementById('confirmation');
-    const confirmationText = document.getElementById('confirmationText');
+    const quitDateEl = document.getElementById('quitDate');
+    const guidanceBanner = document.getElementById('guidanceBanner');
+    const dismissGuidance = document.getElementById('dismissGuidance');
+    const updateBtn = document.getElementById('updateBtn');
     const scheduleBtn = document.getElementById('scheduleBtn');
+    const toast = document.getElementById('toast');
 
-    followupForm.addEventListener('submit', (event) => {
-      event.preventDefault();
+    function formatDate(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(date);
+    }
 
-      scheduleBtn.disabled = true;
-      scheduleBtn.textContent = 'Scheduling...';
-      confirmation.classList.remove('show');
+    const yesterday = new Date();
+    yesterday.setHours(12, 0, 0, 0);
+    yesterday.setDate(yesterday.getDate() - 1);
+    quitDateEl.textContent = formatDate(yesterday);
 
+    dismissGuidance.addEventListener('click', () => {
+      guidanceBanner.classList.add('hidden');
+    });
+
+    updateBtn.addEventListener('click', () => {
+      updateBtn.textContent = 'Saving...';
+      toast.classList.remove('show');
       window.setTimeout(() => {
-        confirmationText.textContent = `Follow-up scheduled for ${followupDate.value} at ${followupTime.value}.`;
-        confirmation.classList.add('show');
-        scheduleBtn.textContent = 'Scheduled';
-        scheduleBtn.disabled = false;
-      }, 650);
+        updateBtn.textContent = 'Record Updated';
+        toast.classList.add('show');
+      }, 500);
+    });
+
+    scheduleBtn.addEventListener('click', () => {
+      window.location.href = 'schedule-followup.html';
     });
   </script>
 </body>
